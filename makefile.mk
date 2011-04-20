@@ -145,7 +145,7 @@ include $(DEP_FILE)
 # Midi files for firmware update
 # ------------------------------------------------------------------------------
 
-HEX2SYSEX = python hardware/tools/hex2sysex/hex2sysex.py
+HEX2SYSEX = python tools/hex2sysex/hex2sysex.py
 
 $(BUILD_DIR)%.mid: $(BUILD_DIR)%.hex
 	$(HEX2SYSEX) -o $@ $<
@@ -157,6 +157,14 @@ midi: $(BUILD_DIR)$(TARGET).mid
 
 syx: $(BUILD_DIR)$(TARGET).syx
 
+# ------------------------------------------------------------------------------
+# Resources
+# ------------------------------------------------------------------------------
+
+RESOURCE_COMPILER = avrlib/tools/resources_compiler.py
+
+resources:	$(wildcard $(RESOURCES)/*.py) 
+		python $(RESOURCE_COMPILER) $(RESOURCES)/resources.py
 
 # ------------------------------------------------------------------------------
 # Publish a firmware version on the website
