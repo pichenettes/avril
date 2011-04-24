@@ -175,8 +175,8 @@ SetupGpio(22, PortC, NoPwmChannel, 6);
 SetupGpio(23, PortC, NoPwmChannel, 7);
 
 const uint8_t kSpiSlaveSelectPin = 4;
-const uint8_t kSpiDataOutPin = 5;
-const uint8_t kSpiDataInPin = 6;
+const uint8_t kSpiMosiPin = 5;
+const uint8_t kSpiMisoPin = 6;
 const uint8_t kSpiClockPin = 7;
 
 #else
@@ -204,8 +204,8 @@ SetupGpio(18, PortC, NoPwmChannel, 4);
 SetupGpio(19, PortC, NoPwmChannel, 5);
 
 const uint8_t kSpiSlaveSelectPin = 10;
-const uint8_t kSpiDataOutPin = 11;
-const uint8_t kSpiDataInPin = 12;
+const uint8_t kSpiMosiPin = 11;
+const uint8_t kSpiMisoPin = 12;
 const uint8_t kSpiClockPin = 13;
 
 #endif  // ATMEGA328P
