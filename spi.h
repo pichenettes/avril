@@ -25,7 +25,6 @@
 //   around 15 cycles (not including the interrupt prelude/postlude), which is
 //   close to the transmission time at the fastest speed.
 // - the atmega is always configured as a master.
-// - no support for reading back from the slave.
 
 #ifndef AVRLIB_SPI_H_
 #define AVRLIB_SPI_H_
@@ -42,7 +41,7 @@ typedef BitInRegister<SPSRRegister, SPIF> TransferComplete;
 template<uint8_t slave_select_pin = 10,
          DataOrder order = MSB_FIRST,
          uint8_t speed = 4>
-class Spi {
+class SPIMaster {
  public:
   enum {
     buffer_size = 0,
@@ -105,10 +104,53 @@ class Spi {
  private:
   typedef Gpio<slave_select_pin> SlaveSelect;
   typedef Gpio<kSpiSlaveSelectPin> GlobalSlaveSelect;
-  typedef Gpio<kSpiDataOutPin> DataOut;
-  typedef Gpio<kSpiDataInPin> DataIn;
+  typedef Gpio<kSpiMosiPin> DataOut;
+  typedef Gpio<kSpiMisoPin> DataIn;
   typedef Gpio<kSpiClockPin> Clock;
 };
+
+template<uint8_t slave_select_pin = 10,
+         DataOrder order = MSB_FIRST,
+         bool enable_interrupt = false>
+class SPISlave {
+ public:
+  enum {
+    buffer_size = 128,
+    data_size = 8
+  };
+
+  static void Init() {
+    Clock::set_mode(DIGITAL_INPUT);
+    DataIn::set_mode(DIGITAL_INPUT);
+    DataOut::set_mode(DIGITAL_OUTPUT);
+    GlobalSlaveSelect::set_mode(DIGITAL_INPUT);  // Ohhh mistress, ohhhh!
+    SlaveSelect::set_mode(DIGITAL_INPUT);
+
+    // SPI enabled, configured as master.
+    uint8_t configuration = _BV(SPE);
+    if (order == LSB_FIRST) {
+      configuration |= _BV(DORD);
+    }
+    if (enable_interrupt) {
+      configuration |= _BV(SPIE);
+    }
+    SPCR = configuration;
+  }
+
+  static inline uint8_t Read(uint8_t v) {
+    while (!TransferComplete::value());
+    return SPDR;
+  }
+
+ private:
+  typedef Gpio<slave_select_pin> SlaveSelect;
+  typedef Gpio<kSpiSlaveSelectPin> GlobalSlaveSelect;
+  typedef Gpio<kSpiMisoPin> DataOut;
+  typedef Gpio<kSpiMosiPin> DataIn;
+  typedef Gpio<kSpiClockPin> Clock;
+};
+
+#define SPI_RECEIVE ISR(SPI_STC_vect)
 
 }  // namespace avrlib
 

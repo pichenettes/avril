@@ -57,6 +57,8 @@ def Canonicalize(x):
       out_chr[i] = ord('x')
     elif chr(i) == '"':
       out_chr[i] = ord('p')
+    elif chr(i) == '|':
+      out_chr[i] = ord('v')
     else:
       out_chr[i] = ord('_')
   table = string.maketrans(in_chr, ''.join(map(chr, out_chr)))
@@ -141,7 +143,7 @@ def GenerateCc(base_name, res):
     if python_type == str:
       for string in resource:
         args = (c_type, '%s_%s' % (prefix.lower(), Canonicalize(string)),
-                res.modifier, string.strip())
+                res.modifier, string.strip().replace('_', ' '))
         f.write('static const %s %s[] %s = "%s";\n' % args)
       if ram:
         args = (c_type, table_name)
