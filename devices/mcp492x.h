@@ -70,7 +70,7 @@ class Dac {
   }
 
  private:
-  typedef Spi<slave_select_pin, MSB_FIRST, kDacSpeed> DacInterface;
+  typedef SPIMaster<slave_select_pin, MSB_FIRST, kDacSpeed> DacInterface;
 };
 
 }  // namespace avrlib
