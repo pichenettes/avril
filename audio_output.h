@@ -65,6 +65,10 @@ class AudioOutput {
     Overwrite(v);
     return 1;
   }
+  
+  static inline void DiscardSample() {
+    OutputBuffer::ImmediateRead();
+  }
 
   // Called from data emission interrupt.
   static inline void EmitSample() {
