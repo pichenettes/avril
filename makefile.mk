@@ -178,3 +178,15 @@ publish: $(BUILD_DIR)$(TARGET).mid $(BUILD_DIR)$(TARGET).hex
 	scp $(BUILD_DIR)$(TARGET).mid $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)/$(TARGET)_$(VERSION).mid
 		scp $(BUILD_DIR)$(TARGET).hex $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)//$(TARGET)_$(VERSION).hex
 		scp $(BUILD_DIR)$(TARGET).syx $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)//$(TARGET)_$(VERSION).syx
+
+# ------------------------------------------------------------------------------
+# Set fuses
+# ------------------------------------------------------------------------------
+
+fuses:
+		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -u \
+			-U lock:w:0x3f:m \
+			-U efuse:w:0x$(EFUSE):m \
+			-U hfuse:w:0x$(HFUSE):m \
+			-U lfuse:w:0x$(LFUSE):m \
+			-Ulock:w:0x0F:m
