@@ -38,7 +38,7 @@ IORegister(SPSR);
 typedef BitInRegister<SPSRRegister, SPI2X> DoubleSpeed;
 typedef BitInRegister<SPSRRegister, SPIF> TransferComplete;
 
-template<uint8_t slave_select_pin = 10,
+template<typename SlaveSelect,
          DataOrder order = MSB_FIRST,
          uint8_t speed = 4>
 class SPIMaster {
@@ -49,13 +49,13 @@ class SPIMaster {
   };
 
   static void Init() {
-    Clock::set_mode(DIGITAL_OUTPUT);
-    DataIn::set_mode(DIGITAL_INPUT);
-    DataOut::set_mode(DIGITAL_OUTPUT);
-    GlobalSlaveSelect::set_mode(DIGITAL_OUTPUT);  // I'm a master!
+    SpiSCK::set_mode(DIGITAL_OUTPUT);
+    SpiMOSI::set_mode(DIGITAL_OUTPUT);
+    SpiMISO::set_mode(DIGITAL_INPUT);
+    SpiSS::set_mode(DIGITAL_OUTPUT);  // I'm a master!
+    SpiSS::High();
     SlaveSelect::set_mode(DIGITAL_OUTPUT);
     SlaveSelect::High();
-    GlobalSlaveSelect::High();
 
     // SPI enabled, configured as master.
     uint8_t configuration = _BV(SPE) | _BV(MSTR);
@@ -100,16 +100,9 @@ class SPIMaster {
     while (!TransferComplete::value());
     SlaveSelect::High();
   }
-
- private:
-  typedef Gpio<slave_select_pin> SlaveSelect;
-  typedef Gpio<kSpiSlaveSelectPin> GlobalSlaveSelect;
-  typedef Gpio<kSpiMosiPin> DataOut;
-  typedef Gpio<kSpiMisoPin> DataIn;
-  typedef Gpio<kSpiClockPin> Clock;
 };
 
-template<uint8_t slave_select_pin = 10,
+template<typename SlaveSelect,
          DataOrder order = MSB_FIRST,
          bool enable_interrupt = false>
 class SPISlave {
@@ -120,10 +113,10 @@ class SPISlave {
   };
 
   static void Init() {
-    Clock::set_mode(DIGITAL_INPUT);
-    DataIn::set_mode(DIGITAL_INPUT);
-    DataOut::set_mode(DIGITAL_OUTPUT);
-    GlobalSlaveSelect::set_mode(DIGITAL_INPUT);  // Ohhh mistress, ohhhh!
+    SpiSCK::set_mode(DIGITAL_INPUT);
+    SpiMOSI::set_mode(DIGITAL_INPUT);
+    SpiMISO::set_mode(DIGITAL_OUTPUT);
+    SpiSS::set_mode(DIGITAL_INPUT);  // Ohhh mistress, ohhhh!
     SlaveSelect::set_mode(DIGITAL_INPUT);
 
     // SPI enabled, configured as master.
@@ -141,13 +134,6 @@ class SPISlave {
     while (!TransferComplete::value());
     return SPDR;
   }
-
- private:
-  typedef Gpio<slave_select_pin> SlaveSelect;
-  typedef Gpio<kSpiSlaveSelectPin> GlobalSlaveSelect;
-  typedef Gpio<kSpiMisoPin> DataOut;
-  typedef Gpio<kSpiMosiPin> DataIn;
-  typedef Gpio<kSpiClockPin> Clock;
 };
 
 #define SPI_RECEIVE ISR(SPI_STC_vect)

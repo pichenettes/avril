@@ -19,13 +19,13 @@
 //
 // Examples of use:
 //
-// Gpio<3>::set_mode(DIGITAL_INPUT)
-// Gpio<4>::set_mode(DIGITAL_OUTPUT)
-// Gpio<3>::value()
-// Gpio<4>::High()
-// Gpio<4>::Low()
-// Gpio<4>::set_value(1)
-// Gpio<4>::set_value(0)
+// NumberedGpio<3>::set_mode(DIGITAL_INPUT)
+// NumberedGpio<4>::set_mode(DIGITAL_OUTPUT)
+// NumberedGpio<3>::value()
+// NumberedGpio<4>::High()
+// NumberedGpio<4>::Low()
+// NumberedGpio<4>::set_value(1)
+// NumberedGpio<4>::set_value(0)
 
 #ifndef AVRLIB_GPIO_H_
 #define AVRLIB_GPIO_H_
@@ -134,14 +134,57 @@ struct GpioImpl {
   }
 };
 
+
+template<typename port, uint8_t bit>
+struct Gpio {
+  typedef GpioImpl<port, NoPwmChannel, bit, false> Impl;
+  static void High() { Impl::High(); }
+  static void Low() { Impl::Low(); }
+  static void set_mode(uint8_t mode) { Impl::set_mode(mode); }
+  static void set_value(uint8_t value) { Impl::set_value(value); }
+  static void set_analog_value(uint8_t value) { Impl::set_analog_value(value); }
+  static uint8_t value() { return Impl::value(); }
+};
+
+
+struct DummyGpio {
+  static void High() { }
+  static void Low() { }
+  static void set_mode(uint8_t mode) { }
+  static void set_value(uint8_t value) { }
+  static void set_analog_value(uint8_t value) { }
+  static uint8_t value() { }
+};
+
+
+template<typename gpio>
+struct DigitalInput {
+  enum {
+    buffer_size = 0,
+    data_size = 1,
+  };
+  static void Init() {
+    gpio::set_mode(DIGITAL_INPUT);
+  }
+  static void EnablePullUpResistor() {
+    gpio::High();
+  }
+  static void DisablePullUpResistor() {
+    gpio::Low();
+  }
+  static uint8_t Read() {
+    return gpio::value();
+  }
+};
+
 // A template that will be specialized for each pin, allowing the pin number to
 // be specified as a template parameter.
 template<int n, bool safe>
-struct NumberedGpio { };
+struct NumberedGpioInternal { };
 
 // Macro to make the pin definitions (template specializations) easier to read.
 #define SetupGpio(n, port, timer, bit) \
-template<bool safe> struct NumberedGpio<n, safe> { \
+template<bool safe> struct NumberedGpioInternal<n, safe> { \
   typedef GpioImpl<port, timer, bit, safe> Impl; };
 
 #ifndef ATMEGA328P
@@ -174,10 +217,12 @@ SetupGpio(21, PortC, NoPwmChannel, 5);
 SetupGpio(22, PortC, NoPwmChannel, 6);
 SetupGpio(23, PortC, NoPwmChannel, 7);
 
-const uint8_t kSpiSlaveSelectPin = 4;
-const uint8_t kSpiMosiPin = 5;
-const uint8_t kSpiMisoPin = 6;
-const uint8_t kSpiClockPin = 7;
+SetupGpio(255, PortB, NoPwmChannel, 0);
+
+typedef Gpio<PortB, 7> SpiSCK;
+typedef Gpio<PortB, 6> SpiMISO;
+typedef Gpio<PortB, 5> SpiMOSI;
+typedef Gpio<PortB, 4> SpiSS;
 
 #else
 
@@ -203,10 +248,12 @@ SetupGpio(17, PortC, NoPwmChannel, 3);
 SetupGpio(18, PortC, NoPwmChannel, 4);
 SetupGpio(19, PortC, NoPwmChannel, 5);
 
-const uint8_t kSpiSlaveSelectPin = 10;
-const uint8_t kSpiMosiPin = 11;
-const uint8_t kSpiMisoPin = 12;
-const uint8_t kSpiClockPin = 13;
+SetupGpio(255, PortB, NoPwmChannel, 0);
+
+typedef Gpio<PortB, 5> SpiSCK;
+typedef Gpio<PortB, 4> SpiMISO;
+typedef Gpio<PortB, 3> SpiMOSI;
+typedef Gpio<PortB, 2> SpiSS;
 
 #endif  // ATMEGA328P
 
@@ -214,54 +261,33 @@ const uint8_t kSpiClockPin = 13;
 // for each access to the PWM pins, as does the original Arduino wire lib,
 // the other that does not (use with care!).
 template<int n, bool safe = false>
-struct Gpio {
-  typedef typename NumberedGpio<n, safe>::Impl Impl;
+struct NumberedGpio {
+  typedef typename NumberedGpioInternal<n, safe>::Impl Impl;
   static void High() { Impl::High(); }
   static void Low() { Impl::Low(); }
   static void set_mode(uint8_t mode) { Impl::set_mode(mode); }
   static void set_value(uint8_t value) { Impl::set_value(value); }
   static void set_analog_value(uint8_t value) { Impl::set_analog_value(value); }
   static uint8_t value() { return Impl::value(); }
-  static uint8_t number() { return n; }
 };
 
-template<int pin>
-struct DigitalInput {
-  enum {
-    buffer_size = 0,
-    data_size = 1,
-  };
-  static void Init() {
-    Gpio<pin>::set_mode(DIGITAL_INPUT);
-  }
-  static void EnablePullUpResistor() {
-    Gpio<pin>::High();
-  }
-  static void DisablePullUpResistor() {
-    Gpio<pin>::Low();
-  }
-  static uint8_t Read() {
-    return Gpio<pin>::value();
-  }
-};
-
-template<int pin>
+template<int n>
 struct PwmOutput {
   enum {
     buffer_size = 0,
     data_size = 8,
   };
   static void Init() {
-    Gpio<pin>::set_mode(ANALOG_OUTPUT);
+    NumberedGpio<n>::set_mode(ANALOG_OUTPUT);
   }
   static void Write(uint8_t value) {
-    return Gpio<pin>::set_analog_value(value);
+    return NumberedGpio<n>::set_analog_value(value);
   }
   static void Stop() {
-    Gpio<pin>::Impl::Pwm::Stop();
+    NumberedGpio<n>::Impl::Pwm::Stop();
   }
   static void Start() {
-    Gpio<pin>::Impl::Pwm::Start();
+    NumberedGpio<n>::Impl::Pwm::Start();
   }
 };
 
