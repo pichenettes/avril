@@ -34,7 +34,7 @@ enum DacVoltageReference {
   UNBUFFERED_REFERENCE
 };
 
-template<uint8_t slave_select_pin,
+template<typename slave_select,
          DacVoltageReference voltage_reference = UNBUFFERED_REFERENCE,
          uint8_t gain = 1>
 class Dac {
@@ -70,7 +70,7 @@ class Dac {
   }
 
  private:
-  typedef SPIMaster<slave_select_pin, MSB_FIRST, kDacSpeed> DacInterface;
+  typedef SpiMaster<slave_select, MSB_FIRST, kDacSpeed> DacInterface;
 };
 
 }  // namespace avrlib

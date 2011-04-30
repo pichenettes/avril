@@ -41,7 +41,7 @@ typedef BitInRegister<SPSRRegister, SPIF> TransferComplete;
 template<typename SlaveSelect,
          DataOrder order = MSB_FIRST,
          uint8_t speed = 4>
-class SPIMaster {
+class SpiMaster {
  public:
   enum {
     buffer_size = 0,
@@ -105,7 +105,7 @@ class SPIMaster {
 template<typename SlaveSelect,
          DataOrder order = MSB_FIRST,
          bool enable_interrupt = false>
-class SPISlave {
+class SpiSlave {
  public:
   enum {
     buffer_size = 128,
