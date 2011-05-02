@@ -34,7 +34,7 @@ enum DacVoltageReference {
   UNBUFFERED_REFERENCE
 };
 
-template<typename slave_select,
+template<typename Interface,
          DacVoltageReference voltage_reference = UNBUFFERED_REFERENCE,
          uint8_t gain = 1>
 class Dac {
@@ -46,14 +46,14 @@ class Dac {
   Dac() { }
 
   static void Init() {
-    DacInterface::Init();
+    Interface::Init();
   }
 
-  static void Write(uint8_t value) {
+  static inline void Write(uint8_t value) {
     Write(value, 0);
   }
 
-  static void Write(uint8_t value, uint8_t channel) {
+  static inline void Write(uint8_t value, uint8_t channel) {
     value = Swap4(value);
     uint8_t command;
     command = (value & 0x0f) | 0x10;
@@ -66,11 +66,8 @@ class Dac {
     if (gain == 1) {
       command |= 0x20;
     }
-    DacInterface::WriteWord(command, value & 0xf0);
+    Interface::WriteWord(command, value & 0xf0);
   }
-
- private:
-  typedef SpiMaster<slave_select, MSB_FIRST, kDacSpeed> DacInterface;
 };
 
 }  // namespace avrlib

@@ -255,6 +255,10 @@ typedef Gpio<PortB, 4> SpiMISO;
 typedef Gpio<PortB, 3> SpiMOSI;
 typedef Gpio<PortB, 2> SpiSS;
 
+typedef Gpio<PortD, 4> UartSpiXCK;
+typedef Gpio<PortD, 1> UartSpiTX;
+typedef Gpio<PortD, 0> UartSpiRX;
+
 #endif  // ATMEGA328P
 
 // Two specializations of the numbered pin template, one which clears the timer

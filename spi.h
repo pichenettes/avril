@@ -87,20 +87,38 @@ class SpiMaster {
 
   static inline void Write(uint8_t v) {
     SlaveSelect::Low();
-    SPDR = v;
-    while (!TransferComplete::value());
+    Overwrite(v);
+    Wait();
     SlaveSelect::High();
+  }
+  
+  static inline void Wait() {
+    while (!TransferComplete::value());
+  }
+  
+  static inline void OptimisticWait() {
+    Wait();
+  }
+  
+  static inline void Strobe() {
+    SlaveSelect::High();
+    SlaveSelect::Low();
+  }
+  
+  static inline void Overwrite(uint8_t v) {
+    SPDR = v;
   }
 
   static inline void WriteWord(uint8_t a, uint8_t b) {
     SlaveSelect::Low();
-    SPDR = a;
-    while (!TransferComplete::value());
-    SPDR = b;
-    while (!TransferComplete::value());
+    Overwrite(a);
+    Wait();
+    Overwrite(b);
+    Wait();
     SlaveSelect::High();
   }
 };
+
 
 template<typename SlaveSelect,
          DataOrder order = MSB_FIRST,
@@ -135,6 +153,70 @@ class SpiSlave {
     return SPDR;
   }
 };
+
+
+template<typename SlaveSelect,
+         DataOrder order = MSB_FIRST,
+         uint8_t speed = 2>
+class UartSpiMaster {
+ public:
+  enum {
+    buffer_size = 0,
+    data_size = 8
+  };
+
+  static void Init() {
+    SlaveSelect::set_mode(DIGITAL_OUTPUT);
+    SlaveSelect::High();
+
+    UBRR0 = 0;
+
+    UartSpiXCK::set_mode(DIGITAL_OUTPUT);
+    UartSpiTX::set_mode(DIGITAL_OUTPUT);
+    UartSpiRX::set_mode(DIGITAL_INPUT);
+    
+    // Set UART to SPI Master mode.
+    UCSR0C = _BV(UMSEL01) | _BV(UMSEL00);
+    
+    // Enable TX and RX
+    UCSR0B = _BV(RXEN0) | _BV(TXEN0);
+    
+    UBRR0 = (speed / 2) - 1;
+  }
+
+  static inline void Write(uint8_t v) {
+    SlaveSelect::Low();
+    Overwrite(v);
+    Wait();
+    SlaveSelect::High();
+  }
+  
+  static inline void Wait() {
+    while (!UCSR0A & _BV(UDRE0));
+  }
+  
+  static inline void OptimisticWait() { }
+  
+  static inline void Strobe() {
+    SlaveSelect::High();
+    SlaveSelect::Low();
+  }
+  
+  static inline void Overwrite(uint8_t v) {
+    UDR0 = v;
+  }
+  
+
+  static inline void WriteWord(uint8_t a, uint8_t b) {
+    SlaveSelect::Low();
+    Overwrite(a);
+    Wait();
+    Overwrite(b);
+    Wait();
+    SlaveSelect::High();
+  }
+};
+
 
 #define SPI_RECEIVE ISR(SPI_STC_vect)
 
