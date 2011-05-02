@@ -206,7 +206,6 @@ class UartSpiMaster {
     UDR0 = v;
   }
   
-
   static inline void WriteWord(uint8_t a, uint8_t b) {
     SlaveSelect::Low();
     Overwrite(a);

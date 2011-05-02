@@ -224,6 +224,10 @@ typedef Gpio<PortB, 6> SpiMISO;
 typedef Gpio<PortB, 5> SpiMOSI;
 typedef Gpio<PortB, 4> SpiSS;
 
+typedef Gpio<PortB, 0> UartSpiXCK;
+typedef Gpio<PortD, 1> UartSpiTX;
+typedef Gpio<PortD, 0> UartSpiRX;
+
 #else
 
 // Pin definitions for ATmega168p and ATmega328p
