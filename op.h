@@ -21,6 +21,8 @@
 #ifndef AVRLIB_OP_H_
 #define AVRLIB_OP_H_
 
+#define USE_OPTIMIZED_OP
+
 #include <avr/pgmspace.h>
 
 #include "avrlib/base.h"
