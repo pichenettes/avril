@@ -276,6 +276,25 @@ static inline uint8_t ShiftRight4(uint8_t a) {
   return result;
 }
 
+static inline uint16_t To12Bits(uint16_t a) {
+  uint16_t result;
+  asm(
+    "movw %A0, %A1" "\n\t"
+    "lsr %B0"      "\n\t"
+    "ror %A0"      "\n\t"
+    "lsr %B0"      "\n\t"
+    "ror %A0"      "\n\t"
+    "lsr %B0"      "\n\t"
+    "ror %A0"      "\n\t"
+    "lsr %B0"      "\n\t"
+    "ror %A0"      "\n\t"
+    : "=r" (result)
+    : "a" (a)
+    );
+  return result;
+}
+
+
 static inline uint8_t MulScale8(uint8_t a, uint8_t b) {
   uint8_t result;
   asm(
@@ -424,6 +443,34 @@ static inline uint8_t InterpolateSample(
   return result;
 }
 
+static inline int16_t SignedUnsignedMul16Scale15(int16_t a, uint16_t b) {
+  int16_t result;
+  int16_t tmp;
+  asm(
+    "eor %A1, %A1"    "\n\t"
+    "mul %A2, %A3"    "\n\t"
+    "mov %B1, r0"    "\n\t"
+    "mulsu %B2, %B3"  "\n\t"
+    "movw %A0, r0"    "\n\t"
+    "mul %B3, %A2"    "\n\t"
+    "add %B1, r0"     "\n\t"
+    "adc %A0, r1"     "\n\t"
+    "adc %B0, %A1"    "\n\t"
+    "mulsu %B2, %A3"  "\n\t"
+    "sbc %B0, %A1"    "\n\t"
+    "add %B1, r0"     "\n\t"
+    "adc %A0, r1"     "\n\t"
+    "adc %B0, %A1"    "\n\t"
+    "eor r1, r1"      "\n\t"
+    "add %B1, %B1"     "\n\t"
+    "adc %A0, %A0"     "\n\t"
+    "adc %B0, %B0"    "\n\t"
+    : "=&r" (result), "=&r" (tmp)
+    : "a" (a), "a" (b)
+  );
+  return result;
+}
+
 #else
 
 static inline uint8_t Clip8(int16_t value) {
@@ -505,6 +552,14 @@ static inline uint8_t InterpolateSample(
       pgm_read_byte(table + (phase >> 8)),
       pgm_read_byte(1 + table + (phase >> 8)),
       phase & 0xff);
+}
+
+static inline uint16_t To12Bits(uint16_t a) {
+  return a >> 4;
+}
+
+static inline int16_t SignedUnsignedMul16Scale15(int16_t a, uint16_t b) {
+  return (static_cast<int32_t>(a) * static_cast<uint32_t>(a)) >> 15;
 }
 
 #endif  // USE_OPTIMIZED_OP
