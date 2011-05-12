@@ -135,6 +135,9 @@ $(BUILD_DIR)$(TARGET).top_symbols: $(TARGET_ELF)
 size: $(TARGET).size
 		cat $(TARGET).size | awk '{ print $$1+$$2 }' | tail -n1 | figlet | cowsay -n -f moose
 
+ramsize: $(TARGET).size
+		cat $(TARGET).size | awk '{ print $$3 }' | tail -n1 | figlet | cowsay -n -f small
+
 size_report:  build/$(TARGET)/$(TARGET).lss build/$(TARGET)/$(TARGET).top_symbols
 
 .PHONY: all clean depends upload
