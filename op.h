@@ -449,7 +449,7 @@ static inline int16_t SignedUnsignedMul16Scale15(int16_t a, uint16_t b) {
   asm(
     "eor %A1, %A1"    "\n\t"
     "mul %A2, %A3"    "\n\t"
-    "mov %B1, r0"    "\n\t"
+    "mov %B1, r1"    "\n\t"
     "mulsu %B2, %B3"  "\n\t"
     "movw %A0, r0"    "\n\t"
     "mul %B3, %A2"    "\n\t"
