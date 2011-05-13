@@ -27,9 +27,19 @@ using namespace avrlib;
 
 #ifdef SERIAL_RX_0
 
+#ifndef ATMEGA328P
+
 ISR(USART0_RX_vect) {
   SerialInput<SerialPort0>::Received();
 }
+
+#else 
+
+ISR(USART_RX_vect) {
+  SerialInput<SerialPort0>::Received();
+}
+
+#endif  // ATMEGA328P
 
 #endif  // SERIAL_RX_0
 
@@ -41,3 +51,4 @@ ISR(USART1_RX_vect) {
 }
 
 #endif  // SERIAL_RX_1
+
