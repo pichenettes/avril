@@ -166,12 +166,31 @@ static inline uint8_t Mix(uint8_t a, uint8_t b, uint8_t balance) {
   return sum.bytes[1];
 }
 
-static inline uint8_t Mix(uint8_t a, uint8_t b, uint8_t gain_a, uint8_t gain_b) {
+static inline uint8_t Mix(
+    uint8_t a, uint8_t b,
+    uint8_t gain_a, uint8_t gain_b) {
   Word sum;
   asm(
     "mul %3, %4"      "\n\t"  // b * gain_b
     "movw %A0, r0"    "\n\t"  // to sum
     "mul %1, %2"      "\n\t"  // a * gain_a
+    "add %A0, r0"     "\n\t"  // add to sum L
+    "adc %B0, r1"     "\n\t"  // add to sum H
+    "eor r1, r1"      "\n\t"  // reset r1 after multiplication
+    : "&=r" (sum)
+    : "a" (a), "a" (gain_a), "a" (b), "a" (gain_b)
+    );
+  return sum.bytes[1];
+}
+
+static inline int8_t SignedMix(
+    int8_t a, int8_t b,
+    uint8_t gain_a, uint8_t gain_b) {
+  Word sum;
+  asm(
+    "mulsu %3, %4"    "\n\t"  // b * gain_b
+    "movw %A0, r0"    "\n\t"  // to sum
+    "mulsu %1, %2"    "\n\t"  // a * gain_a
     "add %A0, r0"     "\n\t"  // add to sum L
     "adc %B0, r1"     "\n\t"  // add to sum H
     "eor r1, r1"      "\n\t"  // reset r1 after multiplication
@@ -307,7 +326,7 @@ static inline uint8_t MulScale8(uint8_t a, uint8_t b) {
   return result;
 }
 
-static inline int8_t SignedMulScale8(int8_t a, uint8_t b) {
+static inline int8_t SignedUnsignedMulScale8(int8_t a, uint8_t b) {
   uint8_t result;
   asm(
     "mulsu %1, %2"    "\n\t"
@@ -489,6 +508,12 @@ static inline uint8_t Mix(uint8_t a, uint8_t b, uint8_t gain_a, uint8_t gain_b) 
   return a * gain_a + b * gain_b >> 8;
 }
 
+static inline int8_t SignedMix(
+    int8_t a, int8_t b,
+    uint8_t gain_a, uint8_t gain_b) {
+  return a * gain_a + b * gain_b >> 8;
+}
+
 static inline uint16_t Mix16(uint8_t a, uint8_t b, uint8_t balance) {
   return a * (255 - balance) + b * balance;
 }
@@ -517,7 +542,7 @@ static inline uint8_t MulScale8(uint8_t a, uint8_t b) {
   return a * b >> 8;
 }
 
-static inline int8_t SignedMulScale8(int8_t a, uint8_t b) {
+static inline int8_t SignedUnsignedMulScale8(int8_t a, uint8_t b) {
   return a * b >> 8;
 }
 
