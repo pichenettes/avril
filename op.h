@@ -462,7 +462,7 @@ static inline uint8_t InterpolateSample(
   return result;
 }
 
-static inline int16_t SignedUnsignedMul16Scale15(int16_t a, uint16_t b) {
+static inline int16_t SignedUnsignedMul16Scale16(int16_t a, uint16_t b) {
   int16_t result;
   int16_t tmp;
   asm(
@@ -481,10 +481,41 @@ static inline int16_t SignedUnsignedMul16Scale15(int16_t a, uint16_t b) {
     "adc %A0, r1"     "\n\t"
     "adc %B0, %A1"    "\n\t"
     "eor r1, r1"      "\n\t"
-    "add %B1, %B1"     "\n\t"
-    "adc %A0, %A0"     "\n\t"
-    "adc %B0, %B0"    "\n\t"
     : "=&r" (result), "=&r" (tmp)
+    : "a" (a), "a" (b)
+  );
+  return result;
+}
+
+static inline int16_t SignedUnsignedMul168Scale8(int16_t a, uint8_t b) {
+  int16_t result;
+  asm(
+    "eor %B0, %B0"    "\n\t"
+    "mul %A1, %A2"    "\n\t"
+    "mov %A0, r1"     "\n\t"
+    "mulsu %B1, %A2"  "\n\t"
+    "add %A0, r0"     "\n\t"
+    "adc %B0, r1"     "\n\t"
+    "eor r1, r1"      "\n\t"
+    : "=&r" (result)
+    : "a" (a), "a" (b)
+  );
+  return result;
+}
+
+static inline int16_t SignedSignedMul168Scale8(int16_t a, int8_t b) {
+  int16_t result;
+  asm(
+    "eor %B0, %B0"    "\n\t"
+    "muls %A2, %B1"   "\n\t"
+    "movw %A0, r0"    "\n\t"
+    "mulsu %A2, %A1"  "\n\t"
+    "eor r0, r0"      "\n\t"
+    "sbc %B0, r0"     "\n\t"
+    "add %A0, r1"     "\n\t"
+    "adc %B0, r0"     "\n\t"
+    "eor r1, r1"      "\n\t"
+    : "=&r" (result)
     : "a" (a), "a" (b)
   );
   return result;
@@ -583,8 +614,12 @@ static inline uint16_t To12Bits(uint16_t a) {
   return a >> 4;
 }
 
-static inline int16_t SignedUnsignedMul16Scale15(int16_t a, uint16_t b) {
-  return (static_cast<int32_t>(a) * static_cast<uint32_t>(a)) >> 15;
+static inline int16_t SignedUnsignedMul16Scale16(int16_t a, uint16_t b) {
+  return (static_cast<int32_t>(a) * static_cast<uint32_t>(b)) >> 16;
+}
+
+static inline int16_t SignedUnsignedMul168Scale8(int16_t a, uint8_t b) {
+  return (static_cast<int32_t>(a) * static_cast<uint32_t>(b)) >> 8;
 }
 
 #endif  // USE_OPTIMIZED_OP
