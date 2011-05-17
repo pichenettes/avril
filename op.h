@@ -43,7 +43,7 @@ static inline int16_t Clip14(int16_t value) {
   return value;
 }
 
-static inline uint8_t AddClip(uint8_t value, uint8_t increment, uint8_t max) {
+static inline uint8_t U8AddClip(uint8_t value, uint8_t increment, uint8_t max) {
   value += increment;
   if (value > max) {
     value = max;
@@ -51,14 +51,14 @@ static inline uint8_t AddClip(uint8_t value, uint8_t increment, uint8_t max) {
   return value;
 }
 
-// Optimized for 0-16384 range.
+// Correct only if the input is positive.
 static inline uint8_t ShiftRight8(int16_t value) {
   return static_cast<uint16_t>(value) >> 8;
 }
 
 #ifdef USE_OPTIMIZED_OP
 
-static inline uint24c_t Add24Carry(uint24_t a, uint24_t b) {
+static inline uint24c_t U24AddC(uint24_t a, uint24_t b) {
   uint16_t a_int = a.integral;
   uint16_t b_int = b.integral;
   uint8_t a_frac = a.fractional;
@@ -79,7 +79,7 @@ static inline uint24c_t Add24Carry(uint24_t a, uint24_t b) {
   return result;
 }
 
-static inline uint24_t Add24(uint24_t a, uint24_t b) {
+static inline uint24_t U24Add(uint24_t a, uint24_t b) {
   uint16_t a_int = a.integral;
   uint16_t b_int = b.integral;
   uint8_t a_frac = a.fractional;
@@ -97,7 +97,7 @@ static inline uint24_t Add24(uint24_t a, uint24_t b) {
   return result;
 }
 
-static inline uint24_t Lsr24(uint24_t a) {
+static inline uint24_t U24Lsr(uint24_t a) {
   uint16_t a_int = a.integral;
   uint8_t a_frac = a.fractional;
   uint24_t result;
@@ -113,7 +113,7 @@ static inline uint24_t Lsr24(uint24_t a) {
   return result;
 }
 
-static inline uint24_t Lsl24(uint24_t a) {
+static inline uint24_t U24Lsl(uint24_t a) {
   uint16_t a_int = a.integral;
   uint8_t a_frac = a.fractional;
   uint24_t result;
@@ -129,7 +129,7 @@ static inline uint24_t Lsl24(uint24_t a) {
   return result;
 }
 
-static inline uint8_t Clip8(int16_t value) {
+static inline uint8_t S16ClipU8(int16_t value) {
   uint8_t result;
   asm(
     "mov %0, %A1"   "\n\t"  // by default, copy the value.
@@ -145,11 +145,11 @@ static inline uint8_t Clip8(int16_t value) {
   return result;
 }
 
-static inline int8_t SignedClip8(int16_t value) {
-  return Clip8(value + 128) + 128;
+static inline int8_t S16ClipS8(int16_t value) {
+  return S16ClipU8(value + 128) + 128;
 }
 
-static inline uint8_t Mix(uint8_t a, uint8_t b, uint8_t balance) {
+static inline uint8_t U8Mix(uint8_t a, uint8_t b, uint8_t balance) {
   Word sum;
   asm(
     "mul %3, %2"      "\n\t"  // b * balance
@@ -166,7 +166,7 @@ static inline uint8_t Mix(uint8_t a, uint8_t b, uint8_t balance) {
   return sum.bytes[1];
 }
 
-static inline uint8_t Mix(
+static inline uint8_t U8Mix(
     uint8_t a, uint8_t b,
     uint8_t gain_a, uint8_t gain_b) {
   Word sum;
@@ -183,7 +183,7 @@ static inline uint8_t Mix(
   return sum.bytes[1];
 }
 
-static inline int8_t SignedMix(
+static inline int8_t S8Mix(
     int8_t a, int8_t b,
     uint8_t gain_a, uint8_t gain_b) {
   Word sum;
@@ -200,7 +200,7 @@ static inline int8_t SignedMix(
   return sum.bytes[1];
 }
 
-static inline uint16_t Mix16(uint8_t a, uint8_t b, uint8_t balance) {
+static inline uint16_t U8MixU16(uint8_t a, uint8_t b, uint8_t balance) {
   Word sum;
   asm(
     "mul %3, %2"      "\n\t"  // b * balance
@@ -217,7 +217,7 @@ static inline uint16_t Mix16(uint8_t a, uint8_t b, uint8_t balance) {
   return sum.value;
 }
 
-static inline uint8_t Mix4(uint8_t a, uint8_t b, uint8_t balance) {
+static inline uint8_t U8U4MixU8(uint8_t a, uint8_t b, uint8_t balance) {
   uint16_t sum;
   asm(
     "mul %2, %1"      "\n\t"  // b * balance
@@ -241,7 +241,7 @@ static inline uint8_t Mix4(uint8_t a, uint8_t b, uint8_t balance) {
   return a;
 }
 
-static inline uint16_t UnscaledMix4(uint8_t a, uint8_t b, uint8_t balance) {
+static inline uint16_t U8U4MixU12(uint8_t a, uint8_t b, uint8_t balance) {
   uint16_t sum;
   asm(
     "mul %3, %2"      "\n\t"  // b * balance
@@ -260,7 +260,7 @@ static inline uint16_t UnscaledMix4(uint8_t a, uint8_t b, uint8_t balance) {
   return sum;
 }
 
-static inline uint8_t ShiftLeft4(uint8_t a) {
+static inline uint8_t U8Shl4(uint8_t a) {
   uint8_t result;
   asm(
     "mov %0, %1"      "\n\t"
@@ -272,7 +272,7 @@ static inline uint8_t ShiftLeft4(uint8_t a) {
   return result;
 }
 
-static inline uint8_t Swap4(uint8_t a) {
+static inline uint8_t U8Swap4(uint8_t a) {
   uint8_t result;
   asm(
     "mov %0, %1"      "\n\t"
@@ -283,7 +283,7 @@ static inline uint8_t Swap4(uint8_t a) {
   return result;
 }
 
-static inline uint8_t ShiftRight4(uint8_t a) {
+static inline uint8_t U8Shr4(uint8_t a) {
   uint8_t result;
   asm(
     "mov %0, %1"      "\n\t"
@@ -295,7 +295,7 @@ static inline uint8_t ShiftRight4(uint8_t a) {
   return result;
 }
 
-static inline uint16_t To12Bits(uint16_t a) {
+static inline uint16_t U16Shr4(uint16_t a) {
   uint16_t result;
   asm(
     "movw %A0, %A1" "\n\t"
@@ -314,7 +314,7 @@ static inline uint16_t To12Bits(uint16_t a) {
 }
 
 
-static inline uint8_t MulScale8(uint8_t a, uint8_t b) {
+static inline uint8_t U8U8MulShift8(uint8_t a, uint8_t b) {
   uint8_t result;
   asm(
     "mul %1, %2"      "\n\t"
@@ -326,7 +326,7 @@ static inline uint8_t MulScale8(uint8_t a, uint8_t b) {
   return result;
 }
 
-static inline int8_t SignedUnsignedMulScale8(int8_t a, uint8_t b) {
+static inline int8_t S8U8MulShift8(int8_t a, uint8_t b) {
   uint8_t result;
   asm(
     "mulsu %1, %2"    "\n\t"
@@ -338,7 +338,7 @@ static inline int8_t SignedUnsignedMulScale8(int8_t a, uint8_t b) {
   return result;
 }
 
-static inline int16_t SignedUnsignedMul(int8_t a, uint8_t b) {
+static inline int16_t S8U8Mul(int8_t a, uint8_t b) {
   int16_t result;
   asm(
     "mulsu %1, %2"    "\n\t"
@@ -350,7 +350,7 @@ static inline int16_t SignedUnsignedMul(int8_t a, uint8_t b) {
   return result;
 }
 
-static inline uint16_t UnsignedUnsignedMul(uint8_t a, uint8_t b) {
+static inline uint16_t U8U8Mul(uint8_t a, uint8_t b) {
   uint16_t result;
   asm(
     "mul %1, %2"    "\n\t"
@@ -362,7 +362,7 @@ static inline uint16_t UnsignedUnsignedMul(uint8_t a, uint8_t b) {
   return result;
 }
 
-static inline int8_t SignedSignedMulScale8(int8_t a, int8_t b) {
+static inline int8_t S8S8MulShift8(int8_t a, int8_t b) {
   uint8_t result;
   asm(
     "muls %1, %2"    "\n\t"
@@ -374,59 +374,92 @@ static inline int8_t SignedSignedMulScale8(int8_t a, int8_t b) {
   return result;
 }
 
-static inline uint16_t Mul16Scale8(uint16_t a, uint16_t b) {
-  uint16_t result;
-  uint32_t product;
+// The code generated by gcc for >> 6 is short but uses a loop. This saves
+// a couple of cycles. Note that this solution only works for operands with
+// a 14-bits resolution.
+static inline uint8_t U14Shr6(uint16_t value) {
+  uint8_t b = value >> 8;
+  uint8_t a = value & 0xff;
+  uint8_t result;
   asm(
+    "add %1, %1"       "\n\t"
+    "adc %2, %2"       "\n\t"
+    "add %1, %1"       "\n\t"
+    "adc %2, %2"       "\n\t"
+    : "=r" (result)
+    : "a" (a), "0" (b)
+  );
+  return result;
+}
+
+static inline uint8_t U15Shr7(uint16_t value) {
+  uint8_t b = value >> 8;
+  uint8_t a = value & 0xff;
+  uint8_t result;
+  asm(
+    "add %1, %1"       "\n\t"
+    "adc %2, %2"       "\n\t"
+    : "=r" (result)
+    : "a" (a), "0" (b)
+  );
+  return result;
+}
+
+static inline int16_t S16U16MulShift16(int16_t a, uint16_t b) {
+  int16_t result;
+  int16_t tmp;
+  asm(
+    "eor %A1, %A1"    "\n\t"
     "mul %A2, %A3"    "\n\t"
-    "movw %A1, r0"    "\n\t"
-    "mul %B2, %B3"    "\n\t"
-    "movw %C1, r0"    "\n\t"
+    "mov %B1, r1"    "\n\t"
+    "mulsu %B2, %B3"  "\n\t"
+    "movw %A0, r0"    "\n\t"
     "mul %B3, %A2"    "\n\t"
     "add %B1, r0"     "\n\t"
-    "adc %C1, r1"     "\n\t"
-    "eor r1, r1"      "\n\t"
-    "adc %D1, r1"     "\n\t"
-    "mul %B2, %A3"    "\n\t"
+    "adc %A0, r1"     "\n\t"
+    "adc %B0, %A1"    "\n\t"
+    "mulsu %B2, %A3"  "\n\t"
+    "sbc %B0, %A1"    "\n\t"
     "add %B1, r0"     "\n\t"
-    "adc %C1, r1"     "\n\t"
+    "adc %A0, r1"     "\n\t"
+    "adc %B0, %A1"    "\n\t"
     "eor r1, r1"      "\n\t"
-    "adc %D1, r1"     "\n\t"
-    "mov %A0, %B1"    "\n\t"
-    "mov %B0, %C1"    "\n\t"
-    : "=r" (result), "=&r" (product)
+    : "=&r" (result), "=&r" (tmp)
     : "a" (a), "a" (b)
   );
   return result;
 }
 
-// The code generated by gcc for >> 6 is short but uses a loop. This saves
-// a couple of cycles. Note that this solution only works for operands with
-// a 14-bits resolution.
-static inline uint8_t ShiftRight6(uint16_t value) {
-  uint8_t b = value >> 8;
-  uint8_t a = value & 0xff;
-  uint8_t result;
+static inline int16_t S16U8MulShift8(int16_t a, uint8_t b) {
+  int16_t result;
   asm(
-    "add %1, %1"       "\n\t"
-    "adc %2, %2"       "\n\t"
-    "add %1, %1"       "\n\t"
-    "adc %2, %2"       "\n\t"
-    : "=r" (result)
-    : "a" (a), "0" (b)
+    "eor %B0, %B0"    "\n\t"
+    "mul %A1, %A2"    "\n\t"
+    "mov %A0, r1"     "\n\t"
+    "mulsu %B1, %A2"  "\n\t"
+    "add %A0, r0"     "\n\t"
+    "adc %B0, r1"     "\n\t"
+    "eor r1, r1"      "\n\t"
+    : "=&r" (result)
+    : "a" (a), "a" (b)
   );
   return result;
 }
 
-static inline uint8_t ShiftRight7(uint16_t value) {
-  uint8_t b = value >> 8;
-  uint8_t a = value & 0xff;
-  uint8_t result;
+static inline int16_t S16S8MulShift8(int16_t a, int8_t b) {
+  int16_t result;
   asm(
-    "add %1, %1"       "\n\t"
-    "adc %2, %2"       "\n\t"
-    : "=r" (result)
-    : "a" (a), "0" (b)
+    "eor %B0, %B0"    "\n\t"
+    "muls %A2, %B1"   "\n\t"
+    "movw %A0, r0"    "\n\t"
+    "mulsu %A2, %A1"  "\n\t"
+    "eor r0, r0"      "\n\t"
+    "sbc %B0, r0"     "\n\t"
+    "add %A0, r1"     "\n\t"
+    "adc %B0, r0"     "\n\t"
+    "eor r1, r1"      "\n\t"
+    : "=&r" (result)
+    : "a" (a), "a" (b)
   );
   return result;
 }
@@ -462,130 +495,71 @@ static inline uint8_t InterpolateSample(
   return result;
 }
 
-static inline int16_t SignedUnsignedMul16Scale16(int16_t a, uint16_t b) {
-  int16_t result;
-  int16_t tmp;
-  asm(
-    "eor %A1, %A1"    "\n\t"
-    "mul %A2, %A3"    "\n\t"
-    "mov %B1, r1"    "\n\t"
-    "mulsu %B2, %B3"  "\n\t"
-    "movw %A0, r0"    "\n\t"
-    "mul %B3, %A2"    "\n\t"
-    "add %B1, r0"     "\n\t"
-    "adc %A0, r1"     "\n\t"
-    "adc %B0, %A1"    "\n\t"
-    "mulsu %B2, %A3"  "\n\t"
-    "sbc %B0, %A1"    "\n\t"
-    "add %B1, r0"     "\n\t"
-    "adc %A0, r1"     "\n\t"
-    "adc %B0, %A1"    "\n\t"
-    "eor r1, r1"      "\n\t"
-    : "=&r" (result), "=&r" (tmp)
-    : "a" (a), "a" (b)
-  );
-  return result;
-}
-
-static inline int16_t SignedUnsignedMul168Scale8(int16_t a, uint8_t b) {
-  int16_t result;
-  asm(
-    "eor %B0, %B0"    "\n\t"
-    "mul %A1, %A2"    "\n\t"
-    "mov %A0, r1"     "\n\t"
-    "mulsu %B1, %A2"  "\n\t"
-    "add %A0, r0"     "\n\t"
-    "adc %B0, r1"     "\n\t"
-    "eor r1, r1"      "\n\t"
-    : "=&r" (result)
-    : "a" (a), "a" (b)
-  );
-  return result;
-}
-
-static inline int16_t SignedSignedMul168Scale8(int16_t a, int8_t b) {
-  int16_t result;
-  asm(
-    "eor %B0, %B0"    "\n\t"
-    "muls %A2, %B1"   "\n\t"
-    "movw %A0, r0"    "\n\t"
-    "mulsu %A2, %A1"  "\n\t"
-    "eor r0, r0"      "\n\t"
-    "sbc %B0, r0"     "\n\t"
-    "add %A0, r1"     "\n\t"
-    "adc %B0, r0"     "\n\t"
-    "eor r1, r1"      "\n\t"
-    : "=&r" (result)
-    : "a" (a), "a" (b)
-  );
-  return result;
-}
-
 #else
 
-static inline uint8_t Clip8(int16_t value) {
+static inline uint8_t S16ClipU8(int16_t value) {
   return value < 0 ? 0 : (value > 255 ? 255 : value);
 }
 
-static inline int8_t SignedClip8(int16_t value) {
+static inline int8_t S16ClipS8(int16_t value) {
   return value < -128 ? -128 : (value > 127 ? 127 : value);
 }
 
-static inline uint8_t Mix(uint8_t a, uint8_t b, uint8_t balance) {
+static inline uint8_t U8Mix(uint8_t a, uint8_t b, uint8_t balance) {
   return a * (255 - balance) + b * balance >> 8;
 }
 
-static inline uint8_t Mix(uint8_t a, uint8_t b, uint8_t gain_a, uint8_t gain_b) {
+static inline uint8_t U8Mix(uint8_t a, uint8_t b, uint8_t gain_a, uint8_t gain_b) {
   return a * gain_a + b * gain_b >> 8;
 }
 
-static inline int8_t SignedMix(
+static inline int8_t S8Mix(
     int8_t a, int8_t b,
     uint8_t gain_a, uint8_t gain_b) {
   return a * gain_a + b * gain_b >> 8;
 }
 
-static inline uint16_t Mix16(uint8_t a, uint8_t b, uint8_t balance) {
+static inline uint16_t U8MixU16(uint8_t a, uint8_t b, uint8_t balance) {
   return a * (255 - balance) + b * balance;
 }
 
-static inline uint8_t Mix4(uint8_t a, uint8_t b, uint8_t balance) {
+static inline uint8_t U8U4MixU8(uint8_t a, uint8_t b, uint8_t balance) {
   return a * (15 - balance) + b * balance >> 4;
 }
 
-static inline uint8_t UnscaledMix4(uint8_t a, uint8_t b, uint8_t balance) {
+static inline uint8_t U8U4MixU12(uint8_t a, uint8_t b, uint8_t balance) {
   return a * (15 - balance) + b * balance;
 }
 
-static inline uint8_t ShiftRight4(uint8_t a) {
+static inline uint8_t U8Shr4(uint8_t a) {
   return a >> 4;
 }
 
-static inline uint8_t ShiftLeft4(uint8_t a) {
+static inline uint8_t U8Shl4(uint8_t a) {
   return a << 4;
 }
 
-static inline uint8_t Swap4(uint8_t a) {
+static inline uint8_t U8Swap4(uint8_t a) {
   return (a << 4) | (a >> 4);
 }
 
-static inline uint8_t MulScale8(uint8_t a, uint8_t b) {
+static inline uint8_t U8U8MulShift8(uint8_t a, uint8_t b) {
   return a * b >> 8;
 }
 
-static inline int8_t SignedUnsignedMulScale8(int8_t a, uint8_t b) {
+static inline int8_t S8U8MulShift8(int8_t a, uint8_t b) {
   return a * b >> 8;
 }
 
-static inline int16_t SignedUnsignedMul(int8_t a, uint8_t b) {
+static inline int16_t S8U8Mul(int8_t a, uint8_t b) {
   return a * b;
 }
 
-static inline uint16_t UnsignedUnsignedMul(uint8_t a, uint8_t b) {
+static inline uint16_t U8U8Mul(uint8_t a, uint8_t b) {
   return a * b;
 }
 
-static inline int8_t SignedSignedMulScale8(int8_t a, int8_t b) {
+static inline int8_t S8S8MulShift8(int8_t a, int8_t b) {
   return a * b >> 8;
 }
 
@@ -593,33 +567,33 @@ static inline uint16_t Mul16Scale8(uint16_t a, uint16_t b) {
   return static_cast<uint32_t>(a) * b >> 8;
 }
 
-static inline uint8_t ShiftRight6(uint16_t value) {
+static inline uint8_t U14Shr6(uint16_t value) {
   return value >> 6;
 }
 
-static inline uint8_t ShiftRight7(uint16_t value) {
+static inline uint8_t U15Shr7(uint16_t value) {
   return value >> 7;
+}
+
+static inline uint16_t U16Shr4(uint16_t a) {
+  return a >> 4;
+}
+
+static inline int16_t S16U16MulShift16(int16_t a, uint16_t b) {
+  return (static_cast<int32_t>(a) * static_cast<uint32_t>(b)) >> 16;
+}
+
+static inline int16_t S16U8MulShift8(int16_t a, uint8_t b) {
+  return (static_cast<int32_t>(a) * static_cast<uint32_t>(b)) >> 8;
 }
 
 static inline uint8_t InterpolateSample(
     const prog_uint8_t* table,
     uint16_t phase) {
-  return Mix(
+  return U8Mix(
       pgm_read_byte(table + (phase >> 8)),
       pgm_read_byte(1 + table + (phase >> 8)),
       phase & 0xff);
-}
-
-static inline uint16_t To12Bits(uint16_t a) {
-  return a >> 4;
-}
-
-static inline int16_t SignedUnsignedMul16Scale16(int16_t a, uint16_t b) {
-  return (static_cast<int32_t>(a) * static_cast<uint32_t>(b)) >> 16;
-}
-
-static inline int16_t SignedUnsignedMul168Scale8(int16_t a, uint8_t b) {
-  return (static_cast<int32_t>(a) * static_cast<uint32_t>(b)) >> 8;
 }
 
 #endif  // USE_OPTIMIZED_OP

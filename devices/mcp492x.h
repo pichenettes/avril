@@ -54,7 +54,7 @@ class Dac {
   }
 
   static inline void Write(uint8_t value, uint8_t channel) {
-    value = Swap4(value);
+    value = U8Swap4(value);
     uint8_t command;
     command = (value & 0x0f) | 0x10;
     if (channel) {
