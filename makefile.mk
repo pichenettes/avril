@@ -118,7 +118,7 @@ $(DEP_FILE):  $(BUILD_DIR) $(DEPS)
 
 upload:    $(TARGET_HEX)
 		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
-			-U flash:w:$(TARGET_HEX):i
+			-U flash:w:$(TARGET_HEX):i -U lock:w:0x$(LOCK):m
 
 clean:
 		$(REMOVE) $(OBJS) $(TARGETS) $(DEP_FILE) $(DEPS)
@@ -188,8 +188,7 @@ publish: $(BUILD_DIR)$(TARGET).mid $(BUILD_DIR)$(TARGET).hex
 
 fuses:
 		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -u \
-			-U lock:w:0x3f:m \
 			-U efuse:w:0x$(EFUSE):m \
 			-U hfuse:w:0x$(HFUSE):m \
 			-U lfuse:w:0x$(LFUSE):m \
-			-Ulock:w:0x0F:m
+			-U lock:w:0x$(LOCK):m
