@@ -77,9 +77,9 @@ class RotaryEncoder {
 };
 
 template<typename Encoder>
-class RotaryEncoderBuffer {
+class RotaryEncoderTracker {
  public:
-  RotaryEncoderBuffer() { }
+  RotaryEncoderTracker() { }
   
   static void Init() {
     Encoder::Init();
@@ -106,7 +106,7 @@ class RotaryEncoderBuffer {
   static int8_t increment_;
   static uint8_t clicked_;
 
-  DISALLOW_COPY_AND_ASSIGN(RotaryEncoderBuffer);
+  DISALLOW_COPY_AND_ASSIGN(RotaryEncoderTracker);
 };
 
 /* static */
@@ -114,10 +114,10 @@ template<typename A, typename B, typename Click, uint16_t debounce_time>
 uint32_t RotaryEncoder<A, B, Click, debounce_time>::next_readout_;
 
 /* static */
-template<typename Encoder> uint8_t RotaryEncoderBuffer<Encoder>::clicked_;
+template<typename Encoder> uint8_t RotaryEncoderTracker<Encoder>::clicked_;
 
 /* static */
-template<typename Encoder> int8_t RotaryEncoderBuffer<Encoder>::increment_;
+template<typename Encoder> int8_t RotaryEncoderTracker<Encoder>::increment_;
 
 }  // namespace avrlib
 
