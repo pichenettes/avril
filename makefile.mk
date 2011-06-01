@@ -192,3 +192,18 @@ fuses:
 			-U hfuse:w:0x$(HFUSE):m \
 			-U lfuse:w:0x$(LFUSE):m \
 			-U lock:w:0x$(LOCK):m
+
+# ------------------------------------------------------------------------------
+# Program (fuses + firmware) a blank chip
+# ------------------------------------------------------------------------------
+
+bake:	$(FIRMWARE)
+		echo "sck 10\nquit\n" | $(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -tuF
+		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -u \
+			-U efuse:w:0x$(EFUSE):m \
+			-U hfuse:w:0x$(HFUSE):m \
+			-U lfuse:w:0x$(LFUSE):m \
+			-U lock:w:0x$(LOCK):m
+		echo "sck 1\nquit\n" | $(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -tuF
+		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
+			-U flash:w:$(TARGET_HEX):i -U lock:w:0x$(LOCK):m
