@@ -56,7 +56,7 @@ class Adc {
   static inline void set_reference(AdcReference reference) {
     admux_value_ = (admux_value_ & 0x3f) | (reference << 6);
   }
-  static inline void set_alignemnt(AdcAlignment alignment) {
+  static inline void set_alignment(AdcAlignment alignment) {
     admux_value_ &= 0xc0;
     if (alignment == ADC_LEFT_ALIGNED) {
       admux_value_ |= 0x20;
