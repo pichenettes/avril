@@ -45,7 +45,6 @@
 //   {
 //     DbgOutput::Tick(); // called at 31250 kHz
 //   }
-//
 
 #ifndef AVRLIB_DEBUG_OUTPUT_H_
 #define AVRLIB_DEBUG_OUTPUT_H_
@@ -56,7 +55,7 @@
 
 namespace avrlib {
 
-template<typename SerialT>
+template<typename SerialT, bool ensureCRLF = false>
 class DebugOutput {
  public:
 
@@ -68,7 +67,9 @@ class DebugOutput {
   }
 
   static inline void Write(char c) {
-    if (c == '\n') SerialT::Write('\r');
+    if (ensureCRLF && c == '\n') {
+      SerialT::Write('\r');
+    }
     SerialT::Write(c);
   }
 
@@ -91,9 +92,9 @@ class DebugOutput {
 
 // Static variables created for each instance
 
-template<typename SerialT>
-  FILE DebugOutput<SerialT>::dbg_stdout_ = 
-    { 0, 0, _FDEV_SETUP_WRITE, 0, 0, DebugOutput<SerialT>::dbg_putchar, NULL, 0 };
+template<typename SerialT, bool ensureCRLF>
+  FILE DebugOutput<SerialT, ensureCRLF>::dbg_stdout_ = 
+    { 0, 0, _FDEV_SETUP_WRITE, 0, 0, DebugOutput<SerialT, ensureCRLF>::dbg_putchar, NULL, 0 };
 
 }  // namespace avrlib
 
