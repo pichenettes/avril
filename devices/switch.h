@@ -1,4 +1,4 @@
-// Copyright 2010 Olivier Gillet.
+// Copyright 2009 Olivier Gillet.
 //
 // Author: Olivier Gillet (ol.gillet@gmail.com)
 //
@@ -15,20 +15,23 @@
 //
 // -----------------------------------------------------------------------------
 //
-// Switch debouncing.
+// Debouncing for:
+// - A single switch.
+// - An array of switches.
 
-#ifndef AVRLIB_DEVICES_DEBOUNCE_H_
-#define AVRLIB_DEVICES_DEBOUNCE_H_
+#ifndef AVRLIB_DEVICES_SWITCHES_H_
+#define AVRLIB_DEVICES_SWITCHES_H_
 
-#include "avrlib/gpio.h"
+#include "avrlib/devices/shift_register.h"
+#include "avrlib/size_to_type.h"
 
 namespace avrlib {
-
+  
 template<typename Input, bool pulled_up = true>
 class DebouncedSwitch {
  public:
   DebouncedSwitch() { }
-
+    
   static inline void Init() {
     Input::set_mode(DIGITAL_INPUT);
     if (pulled_up) {
@@ -49,7 +52,7 @@ class DebouncedSwitch {
   static inline uint8_t low() { return state_ == 0x00; }
   static inline uint8_t state() { return state_; }
   static inline uint8_t immediate_value() { return Input::value(); }
-  
+
  private:
   static uint8_t state_;
 
@@ -60,6 +63,55 @@ class DebouncedSwitch {
 template<typename Input, bool pulled_up>
 uint8_t DebouncedSwitch<Input, pulled_up>::state_;
 
+
+template<typename Load, typename Clock, typename Data, uint8_t num_inputs>
+class DebouncedSwitches {
+  typedef typename DataTypeForSize<num_inputs>::Type T;
+  typedef ShiftRegisterInput<
+      Load, Clock, Data, 8 * sizeof(T), LSB_FIRST> Register;
+
+ public:
+  DebouncedSwitches() { }
+
+  static inline void Init() {
+    Register::Init();
+    memset(state_, 0xff, sizeof(state_));
+  }
+
+  static inline void Read() {
+    T value = Register::Read();
+    T mask = 1 << (num_inputs - 1);
+    for (uint8_t i = 0; i < num_inputs; ++i) {
+      state_[i] <<= 1;
+      if (value & mask) {
+         state_[i] |= 1;
+      }
+    }
+  }
+  
+  static inline uint8_t lowered(uint8_t index) { return state_[index] == 0x80; }
+  static inline uint8_t raised(uint8_t index) { return state_[index] == 0x7f; }
+  static inline uint8_t high(uint8_t index) { return state_[index] == 0xff; }
+  static inline uint8_t low(uint8_t index) { return state_[index] == 0x00; }
+  static inline uint8_t state(uint8_t index) { return state_[index]; }
+  static inline int8_t event(uint8_t index) {
+    if (lowered(index)) {
+      return -1;
+    } else if (raised(index)) {
+      return 1;
+    }
+    return 0;
+  }
+
+ private:
+  static uint8_t state_[num_inputs];
+
+  DISALLOW_COPY_AND_ASSIGN(DebouncedSwitches);
+};
+
+template<typename Load, typename Clock, typename Data, uint8_t num_inputs>
+uint8_t DebouncedSwitches<Load, Clock, Data, num_inputs>::state_[num_inputs];
+
 }  // namespace avrlib
 
-#endif  // AVRLIB_DEVICES_DEBOUNCE_H_
+#endif   // AVRLIB_DEVICES_SWITCHES_H_
