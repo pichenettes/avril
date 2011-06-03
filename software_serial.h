@@ -149,22 +149,25 @@ uint8_t BufferedSoftwareSerialOutput<TxPin, timer_rate, baud_rate,
 // Following code from NewSoftSerial, Copyright (c) 2006 David A. Mellis.
 template<typename TxPin, uint16_t baud_rate>
 struct SoftwareSerialOutput {
+
+  static void Init() {
+    TxPin::set_mode(DIGITAL_OUTPUT);
+  }
+
   static void Write(uint8_t tx_byte) {
     uint8_t oldSREG = SREG;
     cli();
 
-    TxPin::set_mode(DIGITAL_OUTPUT);
-    uint16_t delay = (F_CPU / baud_rate) / 7;
-    uint16_t tx_delay = delay - 5;
+    uint16_t tx_delay = delay_ - 5;
     TxPin::Low();
-    TunedDelay(delay);
+    TunedDelay(delay_);
     for (uint8_t mask = 1; mask; mask <<= 1) {
       TxPin::set_value(tx_byte & mask);
       TunedDelay(tx_delay);
     }
     TxPin::High();
     SREG = oldSREG;
-    TunedDelay(delay);
+    TunedDelay(delay_);
   }
 
   static inline void TunedDelay(uint16_t delay) {
@@ -179,7 +182,17 @@ struct SoftwareSerialOutput {
       : "0" (delay)
     );
   }
+
+ private:
+  static uint16_t delay_;
+
+  DISALLOW_COPY_AND_ASSIGN(SoftwareSerialOutput);
 };
+
+// Static variables created for each instance
+
+template<typename TxPin, uint16_t baud_rate>
+  uint16_t SoftwareSerialOutput<TxPin, baud_rate>::delay_ = (F_CPU / baud_rate) / 7;
 
 }  // namespace avrlib
 
