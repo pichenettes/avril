@@ -26,7 +26,7 @@
 
 namespace avrlib {
 
-template<typename A, typename B, typename Click, uint16_t debounce_time = 1>
+template<typename A, typename B, typename Click>
 class RotaryEncoder {
  public:
   typedef DebouncedSwitch<A> SwitchA;
@@ -39,17 +39,6 @@ class RotaryEncoder {
     SwitchA::Init();
     SwitchB::Init();
     SwitchClick::Init();
-    next_readout_ = 0;
-  }
-
-  static inline int8_t TimedRead() {
-    uint32_t t = milliseconds();
-    int8_t increment = 0;
-    if (t >= next_readout_) {
-      next_readout_ = t + debounce_time;
-      increment = Read();
-    }
-    return increment;
   }
 
   static inline int8_t Read() {
@@ -108,10 +97,6 @@ class RotaryEncoderTracker {
 
   DISALLOW_COPY_AND_ASSIGN(RotaryEncoderTracker);
 };
-
-/* static */
-template<typename A, typename B, typename Click, uint16_t debounce_time>
-uint32_t RotaryEncoder<A, B, Click, debounce_time>::next_readout_;
 
 /* static */
 template<typename Encoder> uint8_t RotaryEncoderTracker<Encoder>::clicked_;
