@@ -27,9 +27,10 @@
 namespace avrlib {
 
 enum ControlType {
-  POT = 0,
-  ENCODER = 1,
-  SWITCH = 2
+  CONTROL_POT = 0,
+  CONTROL_ENCODER = 1,
+  CONTROL_ENCODER_CLICK = 2,
+  CONTROL_SWITCH = 3
 };
 
 struct Event {
@@ -57,13 +58,13 @@ class EventQueue {
   static void AddEvent(uint8_t control_type, uint8_t id, uint8_t data) {
     last_event_time_ = milliseconds();
     Word v;
-    v.bytes[0] = U8ShiftLeft4(control_type) | id;
+    v.bytes[0] = U8ShiftLeft4(control_type) | (id & 0x0f);
     v.bytes[1] = data;
-    events_.Overwrite(v);
+    events_.Overwrite(v.value);
   }
   
   static uint8_t available() {
-    return events_.available();
+    return events_.readable();
   }
   
   static uint32_t idle_time() {
@@ -73,7 +74,8 @@ class EventQueue {
   
   static Event PullEvent() {
     Event e;
-    Word v = events_.ImmediateRead();
+    Word v;
+    v.value = events_.ImmediateRead();
     e.control_type = U8ShiftRight4(v.bytes[0]);
     e.control_id = v.bytes[0] & 0x0f;
     e.value = v.bytes[1];
