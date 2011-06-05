@@ -187,9 +187,46 @@ struct NumberedGpioInternal { };
 template<bool safe> struct NumberedGpioInternal<n, safe> { \
   typedef GpioImpl<port, timer, bit, safe> Impl; };
 
-#ifndef ATMEGA328P
+// Pin definitions for ATmega lineup
 
-// Pin definitions for ATmega644p and ATmega1284p
+#if defined(ATMEGA48P) || defined(ATMEGA88P) || defined(ATMEGA168P) || defined(ATMEGA328P)
+
+SetupGpio(0, PortD, NoPwmChannel, 0);
+SetupGpio(1, PortD, NoPwmChannel, 1);
+SetupGpio(2, PortD, NoPwmChannel, 2);
+SetupGpio(3, PortD, PwmChannel2B, 3);
+SetupGpio(4, PortD, NoPwmChannel, 4);
+SetupGpio(5, PortD, PwmChannel0B, 5);
+SetupGpio(6, PortD, PwmChannel0A, 6);
+SetupGpio(7, PortD, NoPwmChannel, 7);
+SetupGpio(8, PortB, NoPwmChannel, 0);
+SetupGpio(9, PortB, PwmChannel1A, 1);
+SetupGpio(10, PortB, PwmChannel1B, 2);
+SetupGpio(11, PortB, PwmChannel2A, 3);
+SetupGpio(12, PortB, NoPwmChannel, 4);
+SetupGpio(13, PortB, NoPwmChannel, 5);
+SetupGpio(14, PortC, NoPwmChannel, 0);
+SetupGpio(15, PortC, NoPwmChannel, 1);
+SetupGpio(16, PortC, NoPwmChannel, 2);
+SetupGpio(17, PortC, NoPwmChannel, 3);
+SetupGpio(18, PortC, NoPwmChannel, 4);
+SetupGpio(19, PortC, NoPwmChannel, 5);
+
+SetupGpio(255, PortB, NoPwmChannel, 0);
+
+typedef Gpio<PortB, 5> SpiSCK;
+typedef Gpio<PortB, 4> SpiMISO;
+typedef Gpio<PortB, 3> SpiMOSI;
+typedef Gpio<PortB, 2> SpiSS;
+
+typedef Gpio<PortD, 4> UartSpiXCK;
+typedef Gpio<PortD, 1> UartSpiTX;
+typedef Gpio<PortD, 0> UartSpiRX;
+
+#define HAS_USART0
+
+#elif defined(ATMEGA164P) || defined(ATMEGA324P) || defined(ATMEGA644P) || defined(ATMEGA1284P)
+
 SetupGpio(0,  PortB, NoPwmChannel, 0);
 SetupGpio(1,  PortB, NoPwmChannel, 1);
 SetupGpio(2,  PortB, NoPwmChannel, 2);
@@ -228,42 +265,18 @@ typedef Gpio<PortB, 0> UartSpiXCK;
 typedef Gpio<PortD, 1> UartSpiTX;
 typedef Gpio<PortD, 0> UartSpiRX;
 
+#define HAS_USART0
+#define HAS_USART1
+
+#ifdef ATMEGA1284P
+#define HAS_TIMER3
+#endif
+
 #else
 
-// Pin definitions for ATmega168p and ATmega328p
-SetupGpio(0, PortD, NoPwmChannel, 0);
-SetupGpio(1, PortD, NoPwmChannel, 1);
-SetupGpio(2, PortD, NoPwmChannel, 2);
-SetupGpio(3, PortD, PwmChannel2B, 3);
-SetupGpio(4, PortD, NoPwmChannel, 4);
-SetupGpio(5, PortD, PwmChannel0B, 5);
-SetupGpio(6, PortD, PwmChannel0A, 6);
-SetupGpio(7, PortD, NoPwmChannel, 7);
-SetupGpio(8, PortB, NoPwmChannel, 0);
-SetupGpio(9, PortB, PwmChannel1A, 1);
-SetupGpio(10, PortB, PwmChannel1B, 2);
-SetupGpio(11, PortB, PwmChannel2A, 3);
-SetupGpio(12, PortB, NoPwmChannel, 4);
-SetupGpio(13, PortB, NoPwmChannel, 5);
-SetupGpio(14, PortC, NoPwmChannel, 0);
-SetupGpio(15, PortC, NoPwmChannel, 1);
-SetupGpio(16, PortC, NoPwmChannel, 2);
-SetupGpio(17, PortC, NoPwmChannel, 3);
-SetupGpio(18, PortC, NoPwmChannel, 4);
-SetupGpio(19, PortC, NoPwmChannel, 5);
+#error Unsupported MCU type
 
-SetupGpio(255, PortB, NoPwmChannel, 0);
-
-typedef Gpio<PortB, 5> SpiSCK;
-typedef Gpio<PortB, 4> SpiMISO;
-typedef Gpio<PortB, 3> SpiMOSI;
-typedef Gpio<PortB, 2> SpiSS;
-
-typedef Gpio<PortD, 4> UartSpiXCK;
-typedef Gpio<PortD, 1> UartSpiTX;
-typedef Gpio<PortD, 0> UartSpiRX;
-
-#endif  // ATMEGA328P
+#endif
 
 // Two specializations of the numbered pin template, one which clears the timer
 // for each access to the PWM pins, as does the original Arduino wire lib,

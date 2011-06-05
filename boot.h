@@ -40,11 +40,13 @@ inline void Boot(bool init_timers) {
   }
 
   // Neuter the UARTs.
+#ifdef HAS_USART0
   UCSR0B = 0;
+#endif
 
-#ifndef ATMEGA328P
+#ifdef HAS_USART1
   UCSR1B = 0;
-#endif  // ATMEGA328P
+#endif
 }
 
 }  // avr
