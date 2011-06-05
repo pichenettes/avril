@@ -41,7 +41,7 @@ ISR(USART_RX_vect) {
   SerialInput<SerialPort0>::Received();
 }
 
-#endif // #ifdef HAS_USART
+#endif  // HAS_USART
 
 #endif  // SERIAL_RX_0
 
@@ -54,7 +54,7 @@ ISR(USART1_RX_vect) {
   SerialInput<SerialPort1>::Received();
 }
 
-#endif // #ifdef HAS_USART1
+#endif  // HAS_USART1
 
 #endif  // SERIAL_RX_1
 
