@@ -56,7 +56,7 @@ class EventQueue {
   };
   
   static void AddEvent(uint8_t control_type, uint8_t id, uint8_t data) {
-    last_event_time_ = milliseconds();
+    Touch();
     Word v;
     v.bytes[0] = U8ShiftLeft4(control_type) | (id & 0x0f);
     v.bytes[1] = data;
@@ -70,6 +70,15 @@ class EventQueue {
   static uint32_t idle_time() {
     uint32_t now = milliseconds();
     return static_cast<uint16_t>(now - last_event_time_) >> 8;
+  }
+  
+  static uint16_t idle_time_ms() {
+    uint32_t now = milliseconds();
+    return static_cast<uint16_t>(now - last_event_time_);
+  }
+  
+  static void Touch() {
+    last_event_time_ = milliseconds();
   }
   
   static Event PullEvent() {

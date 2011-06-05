@@ -25,6 +25,8 @@
 
 using namespace avrlib;
 
+#ifndef DISABLE_DEFAULT_UART_RX_ISR
+
 #ifdef SERIAL_RX_0
 
 #ifndef ATMEGA328P
@@ -52,3 +54,4 @@ ISR(USART1_RX_vect) {
 
 #endif  // SERIAL_RX_1
 
+#endif  // DISABLE_DEFAULT_UART_RX_ISR

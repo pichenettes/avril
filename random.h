@@ -34,6 +34,10 @@ class Random {
 
   static inline uint16_t state() { return rng_state_; }
 
+  static inline void Seed(uint16_t seed) {
+    rng_state_ = seed;
+  }
+
   static inline uint8_t state_msb() {
     return static_cast<uint8_t>(rng_state_ >> 8);
   }
