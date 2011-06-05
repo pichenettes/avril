@@ -241,6 +241,9 @@ struct Serial {
   static inline Value ImmediateRead() { return Impl::IO::ImmediateRead(); }
 };
 
+
+#ifdef HAS_USART0
+
 IORegister(UBRR0H);
 IORegister(UBRR0L);
 IORegister(UCSR0A);
@@ -260,7 +263,10 @@ typedef SerialPort<
     kSerialOutputBufferSize,
     kSerialInputBufferSize> SerialPort0;
 
-#ifndef ATMEGA328P
+#endif // #ifdef HAS_USART0
+
+
+#ifdef HAS_USART1
 
 IORegister(UBRR1H);
 IORegister(UBRR1L);
@@ -281,7 +287,7 @@ typedef SerialPort<
     kSerialOutputBufferSize,
     kSerialInputBufferSize> SerialPort1;
 
-#endif  // ATMEGA328P
+#endif  // #ifdef HAS_USART1
 
 }  // namespace avrlib
 

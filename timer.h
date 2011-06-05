@@ -49,14 +49,14 @@ SpecialFunctionRegister(OCR1B);
 SpecialFunctionRegister(OCR2A);
 SpecialFunctionRegister(OCR2B);
 
-#ifdef ATMEGA1284P
+#ifdef HAS_TIMER3
 SpecialFunctionRegister(TCCR3A);
 SpecialFunctionRegister(TCCR3B);
 SpecialFunctionRegister(TIMSK3);
 SpecialFunctionRegister(TCNT3);
 SpecialFunctionRegister(OCR3A);
 SpecialFunctionRegister(OCR3B);
-#endif  // ATMEGA1284P
+#endif  // HAS_TIMER3
 
 enum TimerMode {
   TIMER_NORMAL = 0,
@@ -130,7 +130,7 @@ template<> struct NumberedTimer<2> {
       TCNT2Register> Impl;
 };
 
-#ifdef ATMEGA1284P
+#ifdef HAS_TIMER3
 template<> struct NumberedTimer<3> {
   typedef TimerImpl<
       TCCR3ARegister,
@@ -138,7 +138,7 @@ template<> struct NumberedTimer<3> {
       TIMSK3Register,
       TCNT3Register> Impl;
 };
-#endif  // ATMEGA1284P
+#endif  // HAS_TIMER3
 
 template<int n>
 struct Timer {
@@ -190,9 +190,9 @@ typedef PwmChannel<Timer<2>, COM2B1, OCR2BRegister> PwmChannel2B;
 #define TIMER_1_TICK ISR(TIMER1_OVF_vect)
 #define TIMER_2_TICK ISR(TIMER2_OVF_vect)
 
-#ifdef ATMEGA1284P
+#ifdef HAS_TIMER3
 #define TIMER_3_TICK ISR(TIMER3_OVF_vect)
-#endif  // ATMEGA1284P
+#endif  // HAS_TIMER3
 
 }  // namespace avrlib
 
