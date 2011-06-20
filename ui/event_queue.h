@@ -17,8 +17,8 @@
 //
 // Event queue.
 
-#ifndef AVRLIB_UI_EVENT_QUEUE_
-#define AVRLIB_UI_EVENT_QUEUE_
+#ifndef AVRLIB_UI_EVENT_QUEUE_H_
+#define AVRLIB_UI_EVENT_QUEUE_H_
 
 #include "avrlib/base.h"
 #include "avrlib/op.h"
@@ -106,4 +106,4 @@ uint32_t EventQueue<size>::last_event_time_;
 
 }  // namespace avrlib
 
-#endif AVRLIB_UI_EVENT_QUEUE_
+#endif AVRLIB_UI_EVENT_QUEUE_H_

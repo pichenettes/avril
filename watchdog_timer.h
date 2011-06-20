@@ -17,8 +17,8 @@
 //
 // Real time clock.
 
-#ifndef AVRLIB_WATCHDOG_TIMER_
-#define AVRLIB_WATCHDOG_TIMER_
+#ifndef AVRLIB_WATCHDOG_TIMER_H_
+#define AVRLIB_WATCHDOG_TIMER_H_
 
 #include <avr/wdt.h>
 
@@ -41,4 +41,4 @@ inline void ResetWatchdog() {
 
 }  // namespace avrlib
 
-#endif  // AVRLIB_WATCHDOG_TIMER_
+#endif  // AVRLIB_WATCHDOG_TIMER_H_

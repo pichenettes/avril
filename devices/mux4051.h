@@ -15,7 +15,8 @@
 //
 // -----------------------------------------------------------------------------
 //
-// CD4051 mux/demux abstraction. 4051 must be connected to low or high nibble of a port.
+// CD4051 mux/demux abstraction. 4051 must be connected to low or high
+// nibble of a port.
 //
 // Based on parallel_io.cc code by Olivier Gillet (ol.gillet@gmail.com)
 
