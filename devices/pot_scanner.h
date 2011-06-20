@@ -22,19 +22,21 @@
 #define AVRLIB_DEVICES_POT_SCANNER_H_
 
 #include "avrlib/adc.h"
+#include "avrlib/log2.h"
 
 namespace avrlib {
 
 template<
     uint8_t num_inputs,
+    uint8_t first_input_index = 0,
     uint8_t oversampling = 8,
-    uint8_t first_input_index = 0>
+    uint8_t resolution = 7>
 class PotScanner {
  public:
   PotScanner() { }
 
   static inline void Init() {
-    Init();
+    Adc::Init();
     Adc::set_alignment(ADC_LEFT_ALIGNED);
     scan_cycle_ = 0;
     Adc::StartConversion(scan_cycle_ + first_input_index);
@@ -49,6 +51,7 @@ class PotScanner {
     Adc::Wait();
     history_[index] = Adc::ReadOut8();
     value_[scan_cycle_] += history_[index];
+    
     ++scan_cycle_;
     if (scan_cycle_ == num_inputs) {
       scan_cycle_ = 0;
@@ -57,14 +60,24 @@ class PotScanner {
         history_ptr_ = 0;
       }
     }
+    
     Adc::StartConversion(scan_cycle_ + first_input_index);
   }
   
   static inline uint16_t value(uint8_t index) {
-    return value_[index];
+    return value_[index] >> (Log2<oversampling>::value + 8 - resolution);
+  }
+  
+  static inline uint8_t last_read() {
+    if (scan_cycle_ == 0) {
+      return num_inputs - 1;
+    } else {
+      return (scan_cycle_ - 1);
+    }
   }
 
  private:
+  static uint8_t last_read_;
   static uint8_t scan_cycle_;
   static uint8_t history_[num_inputs * oversampling];
   static uint16_t value_[num_inputs];
@@ -74,26 +87,21 @@ class PotScanner {
 };
 
 /* static */
-template<uint8_t num_inputs, uint8_t oversampling, uint8_t first_input_index>
-uint8_t PotScanner<num_inputs, oversampling, first_input_index>::scan_cycle_;
+template<uint8_t a, uint8_t b, uint8_t c, uint8_t d>
+uint8_t PotScanner<a, b, c, d>::scan_cycle_;
 
 /* static */
-template<uint8_t num_inputs, uint8_t oversampling, uint8_t first_input_index>
-uint8_t PotScanner<num_inputs, oversampling, first_input_index>::history_ptr_;
+template<uint8_t a, uint8_t b, uint8_t c, uint8_t d>
+uint8_t PotScanner<a, b, c, d>::history_ptr_;
 
 /* static */
-template<uint8_t num_inputs, uint8_t oversampling, uint8_t first_input_index>
-uint16_t PotScanner<
-    num_inputs,
-    oversampling,
-    first_input_index>::value_[num_inputs];
+template<uint8_t num_inputs, uint8_t b, uint8_t c, uint8_t d>
+uint16_t PotScanner<num_inputs, b, c, d>::value_[num_inputs];
 
 /* static */
-template<uint8_t num_inputs, uint8_t oversampling, uint8_t first_input_index>
-uint8_t PotScanner<
-    num_inputs,
-    oversampling,
-    first_input_index>::history_[num_inputs * oversampling];
+template<uint8_t num_inputs, uint8_t b, uint8_t oversampling, uint8_t d>
+uint8_t PotScanner<num_inputs, b, oversampling, d>::history_[
+    num_inputs * oversampling];
 
 
 }  // namespace avrlib
