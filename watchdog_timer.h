@@ -32,6 +32,13 @@ inline void SystemReset(uint8_t interval) {
   wdt_enable(interval);
 }
 
+inline void ResetWatchdog() {
+  uint8_t watchdog_status = MCUSR;
+  MCUSR = 0;
+  WDTCSR |= _BV(WDCE) | _BV(WDE);
+  WDTCSR = 0;
+}
+
 }  // namespace avrlib
 
 #endif  // AVRLIB_WATCHDOG_TIMER_
