@@ -44,14 +44,17 @@ enum PinMode {
 };
 
 // All the registers used in the following definitions are wrapped here.
+IORegister(DDRA);
 IORegister(DDRB);
 IORegister(DDRC);
 IORegister(DDRD);
 
+IORegister(PORTA);
 IORegister(PORTB);
 IORegister(PORTC);
 IORegister(PORTD);
 
+IORegister(PINA);
 IORegister(PINB);
 IORegister(PINC);
 IORegister(PIND);
@@ -66,6 +69,7 @@ struct Port {
 };
 
 // Definition of I/O ports.
+typedef Port<PINARegister, PORTARegister, DDRARegister> PortA;
 typedef Port<PINBRegister, PORTBRegister, DDRBRegister> PortB;
 typedef Port<PINCRegister, PORTCRegister, DDRCRegister> PortC;
 typedef Port<PINDRegister, PORTDRegister, DDRDRegister> PortD;
@@ -261,9 +265,13 @@ typedef Gpio<PortB, 6> SpiMISO;
 typedef Gpio<PortB, 5> SpiMOSI;
 typedef Gpio<PortB, 4> SpiSS;
 
-typedef Gpio<PortB, 0> UartSpiXCK;
+/*typedef Gpio<PortB, 0> UartSpiXCK;
 typedef Gpio<PortD, 1> UartSpiTX;
-typedef Gpio<PortD, 0> UartSpiRX;
+typedef Gpio<PortD, 0> UartSpiRX;*/
+
+typedef Gpio<PortD, 4> UartSpiXCK;
+typedef Gpio<PortD, 3> UartSpiTX;
+typedef Gpio<PortD, 2> UartSpiRX;
 
 #define HAS_USART0
 #define HAS_USART1
