@@ -150,7 +150,6 @@ struct Gpio {
   static uint8_t value() { return Impl::value(); }
 };
 
-
 struct DummyGpio {
   static void High() { }
   static void Low() { }
