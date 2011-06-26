@@ -56,7 +56,7 @@ CPPFLAGS      = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -I. \
 			-mcall-prologues
 CXXFLAGS      = -fno-exceptions
 ASFLAGS       = -mmcu=$(MCU) -I. -x assembler-with-cpp
-LDFLAGS       = -mmcu=$(MCU) -lm -Wl,--gc-sections -Os
+LDFLAGS       = -mmcu=$(MCU) -lm -Os -Wl,--gc-sections$(EXTRA_LD_FLAGS)
 
 # ------------------------------------------------------------------------------
 # Source compiling
@@ -151,10 +151,10 @@ include $(DEP_FILE)
 HEX2SYSEX = python tools/hex2sysex/hex2sysex.py
 
 $(BUILD_DIR)%.mid: $(BUILD_DIR)%.hex
-	$(HEX2SYSEX) -o $@ $<
+	$(HEX2SYSEX) $(SYSEX_FLAGS) -o $@ $<
 
 $(BUILD_DIR)%.syx: $(BUILD_DIR)%.hex
-	$(HEX2SYSEX) --syx -o $@ $<
+	$(HEX2SYSEX) $(SYSEX_FLAGS) --syx -o $@ $<
 
 midi: $(BUILD_DIR)$(TARGET).mid
 
