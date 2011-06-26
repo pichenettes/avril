@@ -93,12 +93,12 @@ class Hd44780Lcd {
     RsPin::Low();
     EnablePin::Low();
 
-    Delay(100);  // Wait for warm up
+    ConstantDelay(100);  // Wait for warm up
 
     // Set to 4 bit operation.
     for (uint8_t i = 0; i < 3; ++i) {
       SlowWrite((LCD_FUNCTION_SET | LCD_8_BITS) >> 4);
-      Delay(2);
+      ConstantDelay(2);
     }
     SlowWrite((LCD_FUNCTION_SET | LCD_4_BITS) >> 4);
 
@@ -189,9 +189,9 @@ class Hd44780Lcd {
 
   static void SlowWrite(uint8_t nibble) {
     StartWrite(nibble);
-    Delay(1);
+    ConstantDelay(1);
     EndWrite();
-    Delay(3);
+    ConstantDelay(3);
   }
 
   static void SlowCommand(uint8_t value) {
