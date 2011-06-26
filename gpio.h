@@ -44,17 +44,14 @@ enum PinMode {
 };
 
 // All the registers used in the following definitions are wrapped here.
-IORegister(DDRA);
 IORegister(DDRB);
 IORegister(DDRC);
 IORegister(DDRD);
 
-IORegister(PORTA);
 IORegister(PORTB);
 IORegister(PORTC);
 IORegister(PORTD);
 
-IORegister(PINA);
 IORegister(PINB);
 IORegister(PINC);
 IORegister(PIND);
@@ -69,10 +66,20 @@ struct Port {
 };
 
 // Definition of I/O ports.
-typedef Port<PINARegister, PORTARegister, DDRARegister> PortA;
 typedef Port<PINBRegister, PORTBRegister, DDRBRegister> PortB;
 typedef Port<PINCRegister, PORTCRegister, DDRCRegister> PortC;
 typedef Port<PINDRegister, PORTDRegister, DDRDRegister> PortD;
+
+#if defined(ATMEGA164P) || defined(ATMEGA324P) || defined(ATMEGA644P) || defined(ATMEGA1284P)
+
+IORegister(DDRA);
+IORegister(PORTA);
+IORegister(PINA);
+typedef Port<PINARegister, PORTARegister, DDRARegister> PortA;
+
+#endif
+
+
 
 // The actual implementation of a pin, not very convenient to use because it
 // requires the actual parameters of the pin to be passed as template
