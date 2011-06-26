@@ -60,8 +60,6 @@ class RotaryEncoder {
   static uint8_t immediate_value() { return SwitchClick::immediate_value(); }
 
  private:
-  static uint32_t next_readout_;
-
   DISALLOW_COPY_AND_ASSIGN(RotaryEncoder);
 };
 
