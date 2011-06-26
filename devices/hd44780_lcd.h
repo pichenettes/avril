@@ -141,8 +141,16 @@ class Hd44780Lcd {
     }
     OutputBuffer::Overwrite2(LCD_COMMAND | (c >> 4), LCD_COMMAND | (c & 0x0f));
   }
+  
   static inline uint8_t Write(uint8_t character) {
     WriteData(character);
+  }
+  
+  static inline uint8_t Write(const char* s) {
+    while (*s) {
+      WriteData(*s);
+      ++s;
+    }
   }
 
   static inline void MoveCursor(uint8_t row, uint8_t col) {
@@ -166,6 +174,13 @@ class Hd44780Lcd {
     SlowCommand(LCD_SET_CGRAM_ADDRESS | (first_character << 3));
     for (uint8_t i = 0; i < num_characters * 8; ++i) {
       SlowData(SimpleResourcesManager::Lookup<uint8_t, uint8_t>(data, i));
+    }
+  }
+  
+  static inline void Flush() {
+    while (OutputBuffer::readable() || busy()) {
+      Tick();
+      Delay(1);
     }
   }
   
@@ -193,12 +208,12 @@ class Hd44780Lcd {
     EndWrite();
     Delay(3);
   }
-
+  
   static void SlowCommand(uint8_t value) {
     SlowWrite(LCD_COMMAND | (value >> 4));
     SlowWrite(LCD_COMMAND | (value & 0x0f));
   }
-
+  
   static void SlowData(uint8_t value) {
     SlowWrite(LCD_DATA | (value >> 4));
     SlowWrite(LCD_DATA | (value & 0x0f));
