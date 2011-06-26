@@ -104,7 +104,7 @@ class ExternalEeprom {
       if (WriteWithinBlock(address, data, writable) != writable) {
         break;
       }
-      Delay(5);
+      ConstantDelay(5);
       written += writable;
       address += writable;
       data += writable;
