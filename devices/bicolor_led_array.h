@@ -123,6 +123,8 @@ class LedArray {
     End();
   }
   
+  uint8_t* pixels() { return pixels_; }
+  
  private:
   typedef ShiftRegisterOutput<Latch, Clock, Data, 8, MSB_FIRST> Register;
 

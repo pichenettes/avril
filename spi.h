@@ -84,12 +84,38 @@ class SpiMaster {
     }
     SPCR = configuration;
   }
+  
+  static inline void Begin() {
+    SlaveSelect::Low();
+  }
+
+  static inline void End() {
+    SlaveSelect::High();
+  }
+  
+  static inline void Strobe() {
+    SlaveSelect::High();
+    SlaveSelect::Low();
+  }
 
   static inline void Write(uint8_t v) {
-    SlaveSelect::Low();
+    Begin();
+    Send(v);
+    End();
+  }
+  
+  static inline void Send(uint8_t v) {
     Overwrite(v);
     Wait();
-    SlaveSelect::High();
+  }
+  
+  static inline uint8_t Receive() {
+    Send(0xff);
+    return ImmediateRead();
+  }
+  
+  static inline uint8_t ImmediateRead() {
+    return SPDR;
   }
   
   static inline void Wait() {
@@ -100,25 +126,17 @@ class SpiMaster {
     Wait();
   }
   
-  static inline void Strobe() {
-    SlaveSelect::High();
-    SlaveSelect::Low();
-  }
-  
   static inline void Overwrite(uint8_t v) {
     SPDR = v;
   }
 
   static inline void WriteWord(uint8_t a, uint8_t b) {
-    SlaveSelect::Low();
-    Overwrite(a);
-    Wait();
-    Overwrite(b);
-    Wait();
-    SlaveSelect::High();
+    Begin();
+    Send(a);
+    Send(b);
+    End();
   }
 };
-
 
 template<typename SlaveSelect,
          DataOrder order = MSB_FIRST,
@@ -184,35 +202,45 @@ class UartSpiMaster {
     UBRR0 = (speed / 2) - 1;
   }
 
-  static inline void Write(uint8_t v) {
+  static inline void Begin() {
     SlaveSelect::Low();
-    Overwrite(v);
-    Wait();
+  }
+
+  static inline void End() {
     SlaveSelect::High();
   }
   
+  static inline void Strobe() {
+    SlaveSelect::High();
+    SlaveSelect::Low();
+  }
+
+  static inline void Write(uint8_t v) {
+    Begin();
+    Send(v);
+    End();
+  }
+  
+  static inline void Send(uint8_t v) {
+    Overwrite(v);
+    Wait();
+  }
+
   static inline void Wait() {
     while (!UCSR0A & _BV(UDRE0));
   }
   
   static inline void OptimisticWait() { }
   
-  static inline void Strobe() {
-    SlaveSelect::High();
-    SlaveSelect::Low();
-  }
-  
   static inline void Overwrite(uint8_t v) {
     UDR0 = v;
   }
   
   static inline void WriteWord(uint8_t a, uint8_t b) {
-    SlaveSelect::Low();
-    Overwrite(a);
-    Wait();
-    Overwrite(b);
-    Wait();
-    SlaveSelect::High();
+    Begin();
+    Send(a);
+    Send(b);
+    End();
   }
 };
 

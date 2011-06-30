@@ -38,9 +38,6 @@ enum DigitalValue {
   HIGH = 1
 };
 
-static const uint16_t kInternalEepromSize = 2048;
-static const uint16_t kDefaultExternalEepromSize = 8192;
-
 // <avr/io.h> is full of useful defines, but they cannot be used as template
 // arguments because they are of the form: (*(volatile uint8_t *)(0x80))
 // The following define wraps this reference into a class to make it easier to
@@ -157,6 +154,22 @@ enum PortMode {
   DISABLED = 0,
   POLLED = 1,
   BUFFERED = 2
+};
+
+// Some classes (SPI, shift register) have a notion of communication session -
+// Begin is called, several R/W are done, and then End is called to pull high
+// a chip select or latch line. This template ensures that any path leaving a
+// block of code will release the resource.
+template<typename T>
+class scoped_resource {
+ public:
+  scoped_resource() {
+    T::Begin();
+  }
+  
+  ~scoped_resource() {
+    T::End();
+  }
 };
 
 }  // namespace avrlib

@@ -30,7 +30,7 @@
 
 namespace avrlib {
 
-template<uint16_t eeprom_size = kDefaultExternalEepromSize /* bytes */,
+template<uint16_t eeprom_size = 8192 /* bytes */,
          typename Bus = I2cMaster<8, 64>,
          uint8_t base_address = 0,
          bool auto_banking = false,

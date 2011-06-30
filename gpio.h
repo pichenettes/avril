@@ -271,13 +271,13 @@ typedef Gpio<PortB, 6> SpiMISO;
 typedef Gpio<PortB, 5> SpiMOSI;
 typedef Gpio<PortB, 4> SpiSS;
 
-/*typedef Gpio<PortB, 0> UartSpiXCK;
+typedef Gpio<PortB, 0> UartSpiXCK;
 typedef Gpio<PortD, 1> UartSpiTX;
-typedef Gpio<PortD, 0> UartSpiRX;*/
+typedef Gpio<PortD, 0> UartSpiRX;
 
-typedef Gpio<PortD, 4> UartSpiXCK;
+/*typedef Gpio<PortD, 4> UartSpiXCK;
 typedef Gpio<PortD, 3> UartSpiTX;
-typedef Gpio<PortD, 2> UartSpiRX;
+typedef Gpio<PortD, 2> UartSpiRX;*/
 
 #define HAS_USART0
 #define HAS_USART1

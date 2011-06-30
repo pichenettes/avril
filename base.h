@@ -34,6 +34,7 @@ typedef union {
 typedef union {
   uint32_t value;
   uint16_t words[2];
+  uint8_t bytes[4];
 } LongWord;
 
 struct uint24_t {
@@ -46,9 +47,6 @@ struct uint24c_t {
   uint16_t integral;
   uint8_t fractional;
 };
-
-
-#define abs(x) ((x) > 0 ? (x) : -(x))
 
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&);               \

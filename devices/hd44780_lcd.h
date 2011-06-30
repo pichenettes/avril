@@ -180,7 +180,7 @@ class Hd44780Lcd {
   static inline void Flush() {
     while (OutputBuffer::readable() || busy()) {
       Tick();
-      Delay(1);
+      ConstantDelay(1);
     }
   }
   
