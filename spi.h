@@ -31,6 +31,7 @@
 
 #include "avrlib/avrlib.h"
 #include "avrlib/gpio.h"
+#include "avrlib/serial.h"
 
 namespace avrlib {
 
@@ -172,10 +173,64 @@ class SpiSlave {
   }
 };
 
+template<typename XckPort,
+         typename TxPort,
+         typename RxPort,
+         typename PrescalerRegister,
+         typename ControlRegisterB,
+         uint8_t BFlags,
+         typename ControlRegisterC,
+         uint8_t CFlags,
+         typename TxReadyBit,
+         typename DataRegister>
+struct UartSpiPort {
+  static inline uint8_t tx_ready() { return TxReadyBit::value(); }
+  static inline uint8_t data() { return *DataRegister::ptr(); }
+  static inline void set_data(uint8_t value) { *DataRegister::ptr() = value; }
+  static inline void Setup(uint16_t rate) {
+    *PrescalerRegister::ptr() = 0;
+    XckPort::set_mode(DIGITAL_OUTPUT);
+    TxPort::set_mode(DIGITAL_OUTPUT);
+    RxPort::set_mode(DIGITAL_INPUT);
+    *ControlRegisterC::ptr() = CFlags;
+    *ControlRegisterB::ptr() = BFlags;
+    *PrescalerRegister::ptr() = rate;
+  }
+};
 
-template<typename SlaveSelect,
-         DataOrder order = MSB_FIRST,
-         uint8_t speed = 2>
+#ifdef HAS_USART0
+
+typedef UartSpiPort<
+    UartSpi0XCK,
+    UartSpi0TX,
+    UartSpi0RX,
+    UBRR0Register,
+    UCSR0BRegister,
+    _BV(RXEN0) | _BV(TXEN0),
+    UCSR0CRegister,
+    _BV(UMSEL01) | _BV(UMSEL00),
+    BitInRegister<UCSR0ARegister, UDRE0>,
+    UDR0Register> UartSpiPort0;
+
+#endif  // HAS_USART0
+
+#ifdef HAS_USART1
+
+typedef UartSpiPort<
+    UartSpi1XCK,
+    UartSpi1TX,
+    UartSpi1RX,
+    UBRR1Register,
+    UCSR1BRegister,
+    _BV(RXEN1) | _BV(TXEN1),
+    UCSR1CRegister,
+    _BV(UMSEL11) | _BV(UMSEL10),
+    BitInRegister<UCSR1ARegister, UDRE1>,
+    UDR1Register> UartSpiPort1;
+
+#endif  // HAS_USART1
+
+template<typename Port, typename SlaveSelect, uint8_t speed = 2>
 class UartSpiMaster {
  public:
   enum {
@@ -186,20 +241,7 @@ class UartSpiMaster {
   static void Init() {
     SlaveSelect::set_mode(DIGITAL_OUTPUT);
     SlaveSelect::High();
-
-    UBRR0 = 0;
-
-    UartSpiXCK::set_mode(DIGITAL_OUTPUT);
-    UartSpiTX::set_mode(DIGITAL_OUTPUT);
-    UartSpiRX::set_mode(DIGITAL_INPUT);
-    
-    // Set UART to SPI Master mode.
-    UCSR0C = _BV(UMSEL01) | _BV(UMSEL00);
-    
-    // Enable TX and RX
-    UCSR0B = _BV(RXEN0) | _BV(TXEN0);
-    
-    UBRR0 = (speed / 2) - 1;
+    Port::Setup((speed / 2) - 1);
   }
 
   static inline void Begin() {
@@ -227,13 +269,13 @@ class UartSpiMaster {
   }
 
   static inline void Wait() {
-    while (!UCSR0A & _BV(UDRE0));
+    while (!Port::tx_ready());
   }
   
   static inline void OptimisticWait() { }
   
   static inline void Overwrite(uint8_t v) {
-    UDR0 = v;
+    Port::set_data(v);
   }
   
   static inline void WriteWord(uint8_t a, uint8_t b) {
@@ -243,7 +285,6 @@ class UartSpiMaster {
     End();
   }
 };
-
 
 #define SPI_RECEIVE ISR(SPI_STC_vect)
 

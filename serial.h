@@ -246,8 +246,10 @@ struct Serial {
 
 IORegister(UBRR0H);
 IORegister(UBRR0L);
+IORegister16(UBRR0);
 IORegister(UCSR0A);
 IORegister(UCSR0B);
+IORegister(UCSR0C);
 IORegister(UDR0);
 
 typedef SerialPort<
@@ -270,8 +272,10 @@ typedef SerialPort<
 
 IORegister(UBRR1H);
 IORegister(UBRR1L);
+IORegister16(UBRR1);
 IORegister(UCSR1A);
 IORegister(UCSR1B);
+IORegister(UCSR1C);
 IORegister(UDR1);
 
 typedef SerialPort<
