@@ -48,6 +48,12 @@ enum DigitalValue {
   uint8_t operator()(const uint8_t& value) { return *ptr(); } \
 };
 
+#define IORegister16(reg) struct reg##Register { \
+  static volatile uint16_t* ptr() { return &reg; } \
+  reg##Register& operator=(const uint16_t& value) { *ptr() = value; } \
+  uint16_t operator()(const uint16_t& value) { return *ptr(); } \
+};
+
 #define SpecialFunctionRegister(reg) struct reg##Register { \
   static volatile uint8_t* ptr() { return &_SFR_BYTE(reg); } \
   reg##Register& operator=(const uint8_t& value) { *ptr() = value; } \
