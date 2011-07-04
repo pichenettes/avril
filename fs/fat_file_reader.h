@@ -207,7 +207,21 @@ class FATFileReader {
         return status;
       }
     }
-    ReadFSLayout(boot_sector);
+    
+    // Read FS layout.
+    uint32_t fat_size = sector_.boot.fat_size;
+    if (fat_type_ == FFR_FAT32) {
+      fat_size = sector_.boot.fat32.fat_size;
+    }
+    fat_size *= sector_.boot.num_fats;
+    fat_sector_ = boot_sector + sector_.boot.reserved_sec_count;
+    cluster_size_ = sector_.boot.sec_per_cluster;
+    num_root_entries_ = sector_.boot.root_entry_count;
+    
+    root_dir_ = (fat_type_ == FFR_FAT32) ?
+        sector_.boot.fat32.root_sector : fat_sector_ + fat_size;
+    data_sector_ = fat_sector_ + fat_size + (num_root_entries_ / 16);
+    
     return FFR_OK;
   }
   
@@ -316,10 +330,12 @@ class FATFileReader {
       if (readable > handle->entry.file_size) {
         readable = handle->entry.file_size;
       }
-      memcpy(buffer, sector_.bytes + handle->cursor, readable);
+      uint16_t count = readable;
+      while (count) {
+        *buffer++ = sector_.bytes[handle->cursor++];
+        --count;
+      }
       size -= readable;
-      buffer += readable;
-      handle->cursor += readable;
       read += readable;
       handle->entry.file_size -= readable;
       
@@ -360,7 +376,7 @@ class FATFileReader {
   // Check that the sector fetched into memory is the right one for the present
   // file read / directory iteration operation. If this is not the case, read
   // from media layer.
-  static uint8_t SyncCache(FsHandle* handle) {
+  static uint8_t SyncCache(FsHandle* handle) __attribute__((noinline)) {
     if (fetched_sector_ != handle->current_sector) {
       return ReadSector(handle->current_sector);
     }
@@ -427,22 +443,6 @@ class FATFileReader {
     return FFR_ERROR_NO_FAT;
   }
   
-  // Parse the boot selector data structures to collect the layout of the FAT.
-  static inline void ReadFSLayout(uint32_t boot_sector) {
-    uint32_t fat_size = sector_.boot.fat_size;
-    if (fat_type_ == FFR_FAT32) {
-      fat_size = sector_.boot.fat32.fat_size;
-    }
-    fat_size *= sector_.boot.num_fats;
-    fat_sector_ = boot_sector + sector_.boot.reserved_sec_count;
-    cluster_size_ = sector_.boot.sec_per_cluster;
-    num_root_entries_ = sector_.boot.root_entry_count;
-    
-    root_dir_ = (fat_type_ == FFR_FAT32) ?
-        sector_.boot.fat32.root_sector : fat_sector_ + fat_size;
-    data_sector_ = fat_sector_ + fat_size + (num_root_entries_ / 16);
-  }
-   
   static uint32_t fetched_sector_;
   static Sector sector_;
   
