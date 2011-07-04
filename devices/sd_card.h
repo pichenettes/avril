@@ -2,8 +2,10 @@
 //
 // Author: Olivier Gillet (ol.gillet@gmail.com)
 // 
-// Mainly based on the Arduino Sd2Card Library by Arduino Sd2Card Library,
-// Copyright (C) 2009 by William Greiman.
+// Inspired by:
+// - The Arduino Sd2Card Library (C) 2009 by William Greiman,
+// - sd_raw.c (C) 2006-2009 by Roland Riegel
+// - mmc.c (C) ChaN, 2010
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,7 +21,7 @@
 // -----------------------------------------------------------------------------
 //
 // SD / SDHC driver. Note that this only provides sector-level IO functions -
-// the actual FS implementation is in a second class.
+// the actual FS implementation is in another class.
 
 #ifndef AVRLIB_DEVICES_SD_CARD_H_
 #define AVRLIB_DEVICES_SD_CARD_H_
