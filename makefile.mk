@@ -33,8 +33,9 @@ OBJ_FILES      = $(CC_FILES:.cc=.o) $(AS_FILES:.S=.o)
 OBJS           = $(patsubst %,$(BUILD_DIR)%,$(OBJ_FILES))
 DEPS           = $(OBJS:.o=.d)
 
-TARGET_HEX     = $(BUILD_DIR)$(TARGET).hex
+TARGET_BIN     = $(BUILD_DIR)$(TARGET).bin
 TARGET_ELF     = $(BUILD_DIR)$(TARGET).elf
+TARGET_HEX     = $(BUILD_DIR)$(TARGET).hex
 TARGETS        = $(BUILD_DIR)$(TARGET).*
 DEP_FILE       = $(BUILD_DIR)depends.mk
 
@@ -82,6 +83,9 @@ $(BUILD_DIR)%.d: %.s
 $(BUILD_DIR)%.hex: $(BUILD_DIR)%.elf
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
+$(BUILD_DIR)%.bin: $(BUILD_DIR)%.elf
+	$(OBJCOPY) -O binary -R .eeprom $< $@
+
 $(BUILD_DIR)%.eep: $(BUILD_DIR)%.elf
 	-$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
 		--change-section-lma .eeprom=0 -O ihex $< $@
@@ -115,6 +119,8 @@ $(TARGET_ELF):  $(OBJS)
 
 $(DEP_FILE):  $(BUILD_DIR) $(DEPS)
 		cat $(DEPS) > $(DEP_FILE)
+
+bin:	$(TARGET_BIN)
 
 upload:    $(TARGET_HEX)
 		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
