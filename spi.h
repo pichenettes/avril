@@ -19,12 +19,6 @@
 // ownership of the pins 11 (data output),  12 (data input) and 13 (clock), +
 // a user-definable pin for slave selection. Pin 10 should be kept as an output
 // pin, since the SPI master/slave mode is based upon the value of this pin.
-//
-// This is a fairly basic implementation:
-// - nothing is buffered, since the overhead of managing a circular buffer is
-//   around 15 cycles (not including the interrupt prelude/postlude), which is
-//   close to the transmission time at the fastest speed.
-// - the atmega is always configured as a master.
 
 #ifndef AVRLIB_SPI_H_
 #define AVRLIB_SPI_H_
