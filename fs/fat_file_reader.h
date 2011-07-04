@@ -51,7 +51,7 @@ struct Partition {
 struct MBR {
   uint8_t code[446];
   Partition partition[4];
-  uint8_t magic;
+  uint8_t signature;
 };
 
 struct BootSector {
@@ -61,7 +61,6 @@ struct BootSector {
   uint8_t sec_per_cluster;
   uint16_t reserved_sec_count;
   
-  // Offset: 16
   uint8_t num_fats;
   uint16_t root_entry_count;
   uint16_t total_sec;
@@ -72,7 +71,6 @@ struct BootSector {
   uint32_t hidden_sec;
   uint32_t total_sector;
   
-  // Offset: 36
   union {
     struct {
       uint16_t drive_number;
@@ -255,13 +253,13 @@ class FATFileReader {
     }
     while (1) {
       // Every 16th entry, we need to move to the next sector.
-      if ((handle->cursor & 0x0f) == 0) {
+      uint8_t offset = (handle->cursor & 0x0f);
+      if (offset == 0) {
         // We have reached the end of the cluster on a FAT32 system!
         if (ReadNextSector(handle)) {
           return FFR_ERROR_READ;
         }
       }
-      uint8_t offset = (handle->cursor % 16);
       ++handle->cursor;
       memcpy(&handle->entry, &sector_.entries[offset], sizeof(DirectoryEntry));
       // Stop if end of table is reached.
@@ -502,6 +500,7 @@ struct DummyMediaInterface {
   static uint8_t Init() {
     return 0;
   }
+  
   static uint8_t ReadSectors(uint32_t start, uint8_t num_sectors, uint8_t* data) {
     memset(data, 0, 512);
     return 0;
