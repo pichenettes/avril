@@ -22,6 +22,10 @@
 // - Files must be represented by a 83 name when loaded. This is not a big
 //   problem since this code will be used to open only one pre-determined file
 //   anyway.
+//
+// The safe template parameter enables:
+// - More error checking of arguments / call sequences.
+// - Concurrent read/write/enumeration of two files/directories.
 
 #ifndef AVRLIB_FS_FAT_FILE_READER_H_
 #define AVRLIB_FS_FAT_FILE_READER_H_
@@ -30,7 +34,6 @@
 
 #include "avrlib/avrlib.h"
 #include "avrlib/time.h"
-#include "avrlib/devices/SD_card.h"
 
 namespace avrlib {
 
@@ -181,7 +184,7 @@ struct FsHandle {
   DirectoryEntry entry;
 };
 
-template<typename Sd>
+template<typename Media, bool safe = false>
 class FATFileReader {
  public:
   FATFileReader() { }
@@ -190,7 +193,7 @@ class FATFileReader {
   // partition.
   static FatFileReaderStatus Init() {
     fat_type_ = FFR_FAT_UNKNOWN;
-    if (Sd::Init() != SD_OK) {
+    if (Media::Init()) {
       return FFR_ERROR_INIT;
     }
     // Is the VBR on sector 0?
@@ -213,28 +216,30 @@ class FATFileReader {
     if (fat_type_ == FFR_FAT32) {
       fat_size = sector_.boot.fat32.fat_size;
     }
-    fat_size *= sector_.boot.num_fats;
+    if (safe) {
+      fat_size *= sector_.boot.num_fats;
+    } else {
+      if (sector_.boot.num_fats == 2) {
+        fat_size += fat_size;
+      }
+    }
     fat_sector_ = boot_sector + sector_.boot.reserved_sec_count;
     cluster_size_ = sector_.boot.sec_per_cluster;
-    num_root_entries_ = sector_.boot.root_entry_count;
+    uint32_t start = fat_sector_ + fat_size;
     
-    root_dir_ = (fat_type_ == FFR_FAT32) ?
-        sector_.boot.fat32.root_sector : fat_sector_ + fat_size;
-    data_sector_ = fat_sector_ + fat_size + (num_root_entries_ / 16);
+    root_dir_ = fat_type_ == FFR_FAT32 ? sector_.boot.fat32.root_sector : start;
+    data_sector_ = start + (sector_.boot.root_entry_count / 16);
     
     return FFR_OK;
   }
   
   // Open the root directory and start iterating on the file list.
   static FatFileReaderStatus OpenRootDir(FsHandle* handle) {
-    handle->type = FFR_DIR_HANDLE;
-    handle->cursor = 0;
-    handle->cluster_position = 0;
+    memset(handle, 0, sizeof(FsHandle));
     if (fat_type_ == FFR_FAT32) {
       handle->cluster = root_dir_;
-      handle->sector = cluster_to_sector(handle->cluster);
+      handle->sector = cluster_to_sector(root_dir_);
     } else {
-      handle->cluster = 0;
       handle->sector = root_dir_;
     }
     return FFR_OK;
@@ -242,10 +247,10 @@ class FATFileReader {
   
   // Iterate on the next file in the opened directory.
   static FatFileReaderStatus Next(FsHandle* handle) {
-    if (handle->type != FFR_DIR_HANDLE) {
+    if (safe && handle->type != FFR_DIR_HANDLE) {
       return FFR_ERROR_NO_MORE_FILES;
     }
-    if (SyncCache(handle)) {
+    if (safe && SyncCache(handle)) {
       return FFR_ERROR_READ;
     }
     while (1) {
@@ -289,14 +294,16 @@ class FATFileReader {
   
   // Open a file identified by a directory handle.
   static FatFileReaderStatus Open(FsHandle* handle) {
-    if (handle->type != FFR_DIR_HANDLE ||
+    if (safe && (handle->type != FFR_DIR_HANDLE ||
         handle->entry.name[0] == 0 || 
         handle->entry.name[0] == 0xe5 ||
-        (!handle->entry.is_file())) {
+        (!handle->entry.is_file()))) {
       return FFR_ERROR_BAD_FILE;
     }
-    uint32_t cluster = handle->entry.first_cluster;
-    cluster |= (handle->entry.first_cluster_high << 16);
+    LongWord c;
+    c.words[0] = handle->entry.first_cluster;
+    c.words[1] = handle->entry.first_cluster_high;
+    uint32_t cluster = c.value;
     if (!is_valid_cluster(cluster)) {
       return FFR_ERROR_BAD_FILE;
     }
@@ -310,14 +317,15 @@ class FATFileReader {
   
   // Read data from a file.
   static uint16_t Read(FsHandle* handle, uint16_t size, uint8_t* buffer) {
-    if (handle->type != FFR_FILE_HANDLE) {
+    if (safe && handle->type != FFR_FILE_HANDLE) {
       return 0;
     }
-    if (SyncCache(handle)) {
+    if (safe && SyncCache(handle)) {
       return FFR_ERROR_READ;
     }
     uint16_t read = 0;
-    while (size && handle->entry.file_size) {
+    uint32_t remaining = handle->entry.file_size;
+    while (size && remaining) {
       if (handle->cursor == 0) {
         if (ReadNextSector(handle)) {
           break;
@@ -327,8 +335,8 @@ class FATFileReader {
       if (readable > size) {
         readable = size;
       }
-      if (readable > handle->entry.file_size) {
-        readable = handle->entry.file_size;
+      if (readable > remaining) {
+        readable = remaining;
       }
       uint16_t count = readable;
       while (count) {
@@ -337,12 +345,13 @@ class FATFileReader {
       }
       size -= readable;
       read += readable;
-      handle->entry.file_size -= readable;
+      remaining -= readable;
       
       if (handle->cursor == 512) {
         handle->cursor = 0;
       }
     }
+    handle->entry.file_size = remaining;
     return read;
   }
   
@@ -361,13 +370,12 @@ class FATFileReader {
     if (cluster < 2) {
       return 0;
     }
-    uint32_t next_cluster = 0;
     uint32_t fat_sector = fat_sector_;
     fat_sector += (fat_type_ == FFR_FAT16) ? (cluster >> 8) : (cluster >> 7);
     if (ReadSector(fat_sector)) {
       return 0;
     }
-    next_cluster = (fat_type_ == FFR_FAT16)
+    uint32_t next_cluster = (fat_type_ == FFR_FAT16)
       ? sector_.words[cluster & 0xff]
       : sector_.dwords[cluster & 0x7f] & 0x0fffffff;
     return next_cluster;
@@ -384,11 +392,13 @@ class FATFileReader {
   }
   
   // Shortcut for reading a sector into memory.
-  static uint8_t ReadSector(uint32_t sector) {
-    if (Sd::ReadSectors(sector, 1, sector_.bytes) != SD_OK) {
+  static uint8_t ReadSector(uint32_t sector)  __attribute__((noinline)) {
+    if (Media::ReadSectors(sector, 1, sector_.bytes)) {
       return 1;
     } else {
-      fetched_sector_ = sector;
+      if (safe) {
+        fetched_sector_ = sector;
+      }
       return 0;
     }
   }
@@ -410,16 +420,24 @@ class FATFileReader {
     if (ReadSector(handle->sector)) {
       return FFR_ERROR_READ;
     }
-    handle->current_sector = handle->sector;
+    if (safe) {
+      handle->current_sector = handle->sector;
+    }
     ++handle->sector;
     ++handle->cluster_position;
     return FFR_OK;
   }
   
   // Convert a cluster index to a sector address.
-  static uint32_t cluster_to_sector(uint32_t cluster) {
+  static uint32_t cluster_to_sector(uint32_t cluster) __attribute__((noinline)) {
     cluster -= 2;
-    return cluster * cluster_size_ + data_sector_;
+    uint8_t shift = cluster_size_;
+    shift >>= 1;
+    while (shift) {
+      shift >>= 1;
+      cluster <<= 1;
+    }
+    return cluster + data_sector_;
   }
    
   // Look for a FAT FS at a given sector.
@@ -448,7 +466,6 @@ class FATFileReader {
   
   static FatType fat_type_;
   static uint8_t cluster_size_;
-  static uint16_t num_root_entries_;
 
   // Root directory sector for FAT16 ; cluster for FAT32
   static uint32_t root_dir_;
@@ -459,28 +476,38 @@ class FATFileReader {
 };
 
 /* static */
-template<typename Sd> Sector FATFileReader<Sd>::sector_;
+template<typename M, bool s> Sector FATFileReader<M, s>::sector_;
 
 /* static */
-template<typename Sd> uint32_t FATFileReader<Sd>::fetched_sector_;
+template<typename M, bool s> uint32_t FATFileReader<M, s>::fetched_sector_;
 
 /* static */
-template<typename Sd> FatType FATFileReader<Sd>::fat_type_;
+template<typename M, bool s> FatType FATFileReader<M, s>::fat_type_;
 
 /* static */
-template<typename Sd> uint8_t FATFileReader<Sd>::cluster_size_;
+template<typename M, bool s> uint8_t FATFileReader<M, s>::cluster_size_;
 
 /* static */
-template<typename Sd> uint16_t FATFileReader<Sd>::num_root_entries_;
+template<typename M, bool s> uint32_t FATFileReader<M, s>::fat_sector_;
 
 /* static */
-template<typename Sd> uint32_t FATFileReader<Sd>::fat_sector_;
+template<typename M, bool s> uint32_t FATFileReader<M, s>::root_dir_;
 
 /* static */
-template<typename Sd> uint32_t FATFileReader<Sd>::root_dir_;
+template<typename M, bool s> uint32_t FATFileReader<M, s>::data_sector_;
 
-/* static */
-template<typename Sd> uint32_t FATFileReader<Sd>::data_sector_;
+
+// This is how the media access layer can be implemented.
+struct DummyMediaInterface {
+  static uint8_t Init() {
+    return 0;
+  }
+  static uint8_t ReadSectors(uint32_t start, uint8_t num_sectors, uint8_t* data) {
+    memset(data, 0, 512);
+    return 0;
+  }
+};
+
 
 }  // namespace avrlib
 
