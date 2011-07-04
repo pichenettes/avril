@@ -52,7 +52,7 @@ CAT            = cat
 CPPFLAGS      = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -I. \
 			-g -Os -w -Wall \
 			-ffunction-sections -fdata-sections -D$(MCU_DEFINE) \
-			-DSERIAL_RX_0 $(EXTRA_DEFINES) -fno-move-loop-invariants \
+			-DSERIAL_RX_0 $(EXTRA_DEFINES) -fshort-enums -fno-move-loop-invariants \
 			-mcall-prologues
 CXXFLAGS      = -fno-exceptions
 ASFLAGS       = -mmcu=$(MCU) -I. -x assembler-with-cpp
