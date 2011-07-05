@@ -180,6 +180,8 @@ struct FsHandle {
   uint32_t current_sector;
   
   DirectoryEntry entry;
+  
+  uint8_t eof() { return entry.file_size == 0; }
 };
 
 template<typename Media, bool safe = false>
