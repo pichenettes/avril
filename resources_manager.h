@@ -84,6 +84,12 @@ class ResourcesManager {
   static void Load(const prog_char* p, uint8_t i, T* destination) {
     memcpy_P(destination, p + i * sizeof(T), sizeof(T));
   }
+  
+  template<typename T, typename U>
+  static void Load(const T* p, uint8_t i, U* destination) {
+    STATIC_ASSERT(sizeof(T) == sizeof(U));
+    memcpy_P(destination, p + i * sizeof(T), sizeof(T));
+  }
 
   template<typename T>
   static void Load(const T* p, uint8_t* destination, uint16_t size) {
