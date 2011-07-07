@@ -192,6 +192,9 @@ publish: $(BUILD_DIR)$(TARGET).mid $(BUILD_DIR)$(TARGET).hex
 # Set fuses
 # ------------------------------------------------------------------------------
 
+terminal:
+		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -tuF
+
 fuses:
 		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -u \
 			-U efuse:w:0x$(EFUSE):m \
