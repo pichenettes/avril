@@ -86,6 +86,7 @@ class DebouncedSwitches {
       if (value & mask) {
          state_[i] |= 1;
       }
+      mask >>= 1;
     }
   }
   
