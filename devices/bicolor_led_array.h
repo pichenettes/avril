@@ -96,7 +96,7 @@ class LedArray {
     uint8_t num_bits = 1;
     uint8_t threshold = refresh_cycle_ >> 1;
     
-    for (uint8_t i = 0; i < (num_regs * 8) - 1; ++i) {
+    for (uint8_t i = (num_regs * 8) - 2; i != 0xff ; --i) {
       byte <<= 1;
       uint8_t intensity;
       if (refresh_cycle_ & 1) {
