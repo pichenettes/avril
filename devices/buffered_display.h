@@ -57,10 +57,15 @@ class BufferedDisplay {
     cursor_position_ = 255;
     blink_ = 0;
   }
+  
+  static char* line_buffer(uint8_t line) {
+    return static_cast<char*>(
+        static_cast<void*>(local_ + U8U8Mul(line, width)));
+  }
 
   static void Print(uint8_t line, const char* text) {
     uint8_t row = width;
-    uint8_t* destination = local_ + U8U8Mul(line, width);
+    char* destination = line_buffer(line);
     while (*text && row) {
       *destination++ = *text;
       ++text;
@@ -152,7 +157,7 @@ class BufferedDisplay {
  private:
   // Character pages storing what the display currently shows (remote), and
   // what it ought to show (local).
-  static uint8_t local_[width * height];
+  static uint8_t local_[width * height + 1];
   static uint8_t remote_[width * height];
 
   // Position of the last character being transmitted.
@@ -171,7 +176,7 @@ class BufferedDisplay {
 
 /* static */
 template<typename Lcd>
-uint8_t BufferedDisplay<Lcd>::local_[width * height];
+uint8_t BufferedDisplay<Lcd>::local_[width * height + 1];
 
 /* static */
 template<typename Lcd>
