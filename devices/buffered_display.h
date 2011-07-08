@@ -48,7 +48,7 @@ class BufferedDisplay {
   BufferedDisplay() { }
 
   static void Init() {
-    memset(local_, ' ', lcd_buffer_size);
+    Clear();
     memset(remote_, '?', lcd_buffer_size);
     scan_position_ = 0;
     scan_row_ = 0;
@@ -71,6 +71,10 @@ class BufferedDisplay {
       ++text;
       --row;
     }
+  }
+  
+  static void Clear() {
+    memset(local_, ' ', lcd_buffer_size);
   }
 
   // Use kLcdNoCursor (255) or any other value outside of the screen to hide.
