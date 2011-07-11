@@ -58,6 +58,10 @@ namespace avrlib {
 template<typename Latch, typename Clock, typename Data, uint8_t num_regs = 1>
 class LedArray {
  public:
+  enum {
+    size = num_regs * 8 - 1
+  };
+   
   LedArray() { }
   
   static inline void Init() {
@@ -68,11 +72,11 @@ class LedArray {
   // Intensity is in AAAABBBB format, where AAAA is the intensity for the
   // color 1, and BBBB is the intensity for the color 2.
   static inline void set_pixel(uint8_t index, uint8_t intensity) {
-    pixels_[index] = intensity;
+    buffered_pixels_[index] = intensity;
   }
   
   static inline uint8_t pixel(uint8_t index) {
-    return pixels_[index];
+    return buffered_pixels_[index];
   }
   
   static inline void ShiftOutData(uint8_t v) {
@@ -88,7 +92,11 @@ class LedArray {
   }
   
   static inline void Clear() {
-    memset(pixels_, 0, num_regs * 8 - 1);
+    memset(buffered_pixels_, 0, size);
+  }
+  
+  static inline void Sync() {
+    memcpy(pixels_, buffered_pixels_, size);
   }
   
   static inline void ShiftOutPixels() {
@@ -123,19 +131,23 @@ class LedArray {
     End();
   }
   
-  uint8_t* pixels() { return pixels_; }
+  uint8_t* pixels() { return buffered_pixels_; }
   
  private:
   typedef ShiftRegisterOutput<Latch, Clock, Data, 8, MSB_FIRST> Register;
 
-  static uint8_t pixels_[num_regs * 8 - 1];
+  static uint8_t buffered_pixels_[size];
+  static uint8_t pixels_[size];
   static uint8_t refresh_cycle_;
 
   DISALLOW_COPY_AND_ASSIGN(LedArray);
 };
 
 template<typename Latch, typename Clock, typename Data, uint8_t num_regs>
-uint8_t LedArray<Latch, Clock, Data, num_regs>::pixels_[num_regs * 8 - 1];
+uint8_t LedArray<Latch, Clock, Data, num_regs>::pixels_[size];
+
+template<typename Latch, typename Clock, typename Data, uint8_t num_regs>
+uint8_t LedArray<Latch, Clock, Data, num_regs>::buffered_pixels_[size];
 
 template<typename Latch, typename Clock, typename Data, uint8_t num_regs>
 uint8_t LedArray<Latch, Clock, Data, num_regs>::refresh_cycle_;
