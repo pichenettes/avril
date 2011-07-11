@@ -166,6 +166,15 @@ struct DummyGpio {
   static uint8_t value() { }
 };
 
+template<typename Gpio>
+struct Inverter {
+  static void High() { Gpio::Low(); }
+  static void Low() { Gpio::High(); }
+  static void set_mode(uint8_t mode) { Gpio::set_mode(mode); }
+  static void set_value(uint8_t value) { Gpio::set_value(!value); }
+  static void set_analog_value(uint8_t value) { Gpio::set_analog_value(~value); }
+  static uint8_t value() { return !Gpio::value(); }
+};
 
 template<typename gpio>
 struct DigitalInput {
