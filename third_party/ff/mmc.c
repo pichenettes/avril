@@ -17,8 +17,8 @@
 ---------------------------------------------------------------------------*/
 
 /* Port Controls  (Platform dependent) */
-#define CS_LOW()  SDCARD_CS_PORT &= ~SDCARD_CS_BIT     /* MMC CS = L */
-#define CS_HIGH() SDCARD_CS_PORT |= SDCARD_CS_BIT      /* MMC CS = H */
+#define CS_LOW()  MMC_CS_PORT &= ~MMC_CS_BIT     /* MMC CS = L */
+#define CS_HIGH() MMC_CS_PORT |= MMC_CS_BIT      /* MMC CS = H */
 #define SOCKWP    0   /* Write protected. yes:true, no:false, default:false */
 #define SOCKINS   1  /* Card detected.   yes:true, no:false, default:true */
 
