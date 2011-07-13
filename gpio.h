@@ -208,7 +208,8 @@ template<bool safe> struct NumberedGpioInternal<n, safe> { \
 
 // Pin definitions for ATmega lineup
 
-#if defined(ATMEGA48P) || defined(ATMEGA88P) || defined(ATMEGA168P) || defined(ATMEGA328P)
+#if defined(ATMEGA48P) || defined(ATMEGA88P) || defined(ATMEGA168P) || \
+    defined(ATMEGA328P)
 
 SetupGpio(0, PortD, NoPwmChannel, 0);
 SetupGpio(1, PortD, NoPwmChannel, 1);
@@ -244,7 +245,8 @@ typedef Gpio<PortD, 0> UartSpi0RX;
 
 #define HAS_USART0
 
-#elif defined(ATMEGA164P) || defined(ATMEGA324P) || defined(ATMEGA644P) || defined(ATMEGA1284P)
+#elif defined(ATMEGA164P) || defined(ATMEGA324P) || defined(ATMEGA644P) || \
+    defined(ATMEGA1284P)
 
 SetupGpio(0,  PortB, NoPwmChannel, 0);
 SetupGpio(1,  PortB, NoPwmChannel, 1);

@@ -61,8 +61,8 @@ CPPFLAGS      = -mmcu=$(MCU) -I. \
 			$(EXTRA_DEFINES) \
 			-D$(MCU_DEFINE) \
 			-DSERIAL_RX_0 \
-			-DSDCARD_CS_PORT=$(SDCARD_CS_PORT) \
-			-DSDCARD_CS_BIT=$(SDCARD_CS_BIT) \
+			-DMMC_CS_PORT=$(MMC_CS_PORT) \
+			-DMMC_CS_BIT=$(MMC_CS_BIT) \
 			-mcall-prologues
 CXXFLAGS      = -fno-exceptions
 ASFLAGS       = -mmcu=$(MCU) -I. -x assembler-with-cpp
