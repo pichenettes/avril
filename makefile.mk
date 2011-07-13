@@ -28,8 +28,9 @@ F_CPU          = 20000000
 
 VPATH          = $(PACKAGES)
 CC_FILES       = $(notdir $(wildcard $(patsubst %,%/*.cc,$(PACKAGES))))
+C_FILES        = $(notdir $(wildcard $(patsubst %,%/*.c,$(PACKAGES))))
 AS_FILES       = $(notdir $(wildcard $(patsubst %,%/*.as,$(PACKAGES))))
-OBJ_FILES      = $(CC_FILES:.cc=.o) $(AS_FILES:.S=.o)
+OBJ_FILES      = $(CC_FILES:.cc=.o) $(C_FILES:.c=.o) $(AS_FILES:.S=.o)
 OBJS           = $(patsubst %,$(BUILD_DIR)%,$(OBJ_FILES))
 DEPS           = $(OBJS:.o=.d)
 
@@ -50,10 +51,18 @@ AVRDUDE        = $(AVRLIB_TOOLS_PATH)avrdude
 REMOVE         = rm -f
 CAT            = cat
 
-CPPFLAGS      = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -I. \
+CPPFLAGS      = -mmcu=$(MCU) -I. \
 			-g -Os -w -Wall \
-			-ffunction-sections -fdata-sections -D$(MCU_DEFINE) \
-			-DSERIAL_RX_0 $(EXTRA_DEFINES) -fshort-enums -fno-move-loop-invariants \
+			-DF_CPU=$(F_CPU) \
+			-fdata-sections \
+			-ffunction-sections \
+			-fno-move-loop-invariants \
+			-fshort-enums \
+			$(EXTRA_DEFINES) \
+			-D$(MCU_DEFINE) \
+			-DSERIAL_RX_0 \
+			-DSDCARD_CS_PORT=$(SDCARD_CS_PORT) \
+			-DSDCARD_CS_BIT=$(SDCARD_CS_BIT) \
 			-mcall-prologues
 CXXFLAGS      = -fno-exceptions
 ASFLAGS       = -mmcu=$(MCU) -I. -x assembler-with-cpp
@@ -66,11 +75,17 @@ LDFLAGS       = -mmcu=$(MCU) -lm -Os -Wl,--gc-sections$(EXTRA_LD_FLAGS)
 $(BUILD_DIR)%.o: %.cc
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $@
 
+$(BUILD_DIR)%.o: %.c
+	$(CC) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $@
+
 $(BUILD_DIR)%.o: %.s
 	$(CC) -c $(CPPFLAGS) $(ASFLAGS) $< -o $@
 
 $(BUILD_DIR)%.d: %.cc
 	$(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) $< -MF $@ -MT $(@:.d=.o)
+
+$(BUILD_DIR)%.d: %.c
+	$(CC) -MM $(CPPFLAGS) $(CXXFLAGS) $< -MF $@ -MT $(@:.d=.o)
 
 $(BUILD_DIR)%.d: %.s
 	$(CC) -MM $(CPPFLAGS) $(ASFLAGS) $< -MF $@ -MT $(@:.d=.o)
