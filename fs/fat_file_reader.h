@@ -25,7 +25,7 @@
 //
 // The safe template parameter enables:
 // - More error checking of arguments / call sequences.
-// - Concurrent read/write/enumeration of two files/directories.
+// - Concurrent read/write/enumeration of several files/directories.
 
 #ifndef AVRLIB_FS_FAT_FILE_READER_H_
 #define AVRLIB_FS_FAT_FILE_READER_H_
