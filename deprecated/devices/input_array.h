@@ -73,7 +73,10 @@ class InputArray {
     uint8_t same;
     int16_t delta = static_cast<int16_t>(values_[active_input_]) - 
         static_cast<int16_t>(e.value);
-    same = abs(delta) < thresholds_[active_input_];
+    if (delta < 0) {
+      delta = -delta;
+    }
+    same = delta < thresholds_[active_input_];
     uint32_t now = milliseconds();
     e.time = now - last_event_time_;
     if (same) {
