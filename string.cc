@@ -28,7 +28,7 @@ size_t strnlen(const char* string, size_t maxlen) {
   return end ? (size_t) (end - string) : maxlen;
 }
 
-void AlignRight(char* source, uint8_t width) {
+void PadRight(char* source, uint8_t width, char character) {
   uint8_t len = strnlen(source, width);
   if (len == width) {
     return;
@@ -38,9 +38,13 @@ void AlignRight(char* source, uint8_t width) {
     if (i < len) {
       *destination-- = source[len - i - 1];
     } else {
-      *destination-- = ' ';
+      *destination-- = character;
     }
   }
+}
+
+void AlignRight(char* source, uint8_t width) {
+  PadRight(source, width, ' ');
 }
 
 void AlignLeft(char* source, uint8_t width) {
