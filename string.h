@@ -29,6 +29,7 @@ size_t strnlen(const char* string, size_t maxlen);
 
 void AlignRight(char* source, uint8_t width);
 void AlignLeft(char* source, uint8_t width);
+void PadRight(char* source, uint8_t width, char character);
 
 template<typename T>
 struct TypeInfo {
