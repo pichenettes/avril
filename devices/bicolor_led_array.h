@@ -72,11 +72,11 @@ class LedArray {
   // Intensity is in AAAABBBB format, where AAAA is the intensity for the
   // color 1, and BBBB is the intensity for the color 2.
   static inline void set_pixel(uint8_t index, uint8_t intensity) {
-    buffered_pixels_[index] = intensity;
+    pixels_[index] = intensity;
   }
   
   static inline uint8_t pixel(uint8_t index) {
-    return buffered_pixels_[index];
+    return pixels_[index];
   }
   
   static inline void ShiftOutData(uint8_t v) {
@@ -92,51 +92,50 @@ class LedArray {
   }
   
   static inline void Clear() {
-    memset(buffered_pixels_, 0, size);
+    memset(pixels_, 0, size);
   }
   
   static inline void Sync() {
-    memcpy(pixels_, buffered_pixels_, size);
-  }
-  
-  static inline void ShiftOutPixels() {
-    uint8_t byte = refresh_cycle_ & 1;
-    uint8_t num_bits = 1;
-    uint8_t threshold = refresh_cycle_ >> 1;
-    
-    for (uint8_t i = (num_regs * 8) - 2; i != 0xff ; --i) {
-      byte <<= 1;
-      uint8_t intensity;
-      if (refresh_cycle_ & 1) {
-        intensity = U8ShiftRight4(~pixels_[i]);
-      } else {
-        intensity = pixels_[i] & 0x0f;
-      }
-      if (intensity > threshold || intensity == 0xf) {
-        byte |= 1;
-      }
-      ++num_bits;
-      if (num_bits == 8) {
-        Register::ShiftOut(byte);
-        num_bits = 0;
-        byte = 0;
+    uint8_t* data = pwm_data_;
+    for (uint8_t frame = 0; frame < 32; ++frame) {
+      uint8_t byte = frame & 1;
+      uint8_t num_bits = 1;
+      uint8_t threshold = frame >> 1;
+      for (uint8_t i = (num_regs * 8) - 2; i != 0xff ; --i) {
+        byte <<= 1;
+        uint8_t intensity;
+        if (frame & 1) {
+          intensity = U8ShiftRight4(~pixels_[i]);
+        } else {
+          intensity = pixels_[i] & 0x0f;
+        }
+        if (intensity > threshold || intensity == 0xf) {
+          byte |= 1;
+        }
+        ++num_bits;
+        if (num_bits == 8) {
+          *data++ = byte;
+          num_bits = 0;
+          byte = 0;
+        }
       }
     }
-    refresh_cycle_ = (refresh_cycle_ + 1) & 0x1f;
   }
-  
+
   static inline void Write() {
     Begin();
-    ShiftOutPixels();
+    Register::ShiftOut(pwm_data_[refresh_cycle_++]);
+    Register::ShiftOut(pwm_data_[refresh_cycle_++]);
+    refresh_cycle_ &= 0x1f;
     End();
   }
-  
-  uint8_t* pixels() { return buffered_pixels_; }
+
+  uint8_t* pixels() { return pixels_; }
   
  private:
   typedef ShiftRegisterOutput<Latch, Clock, Data, 8, MSB_FIRST> Register;
 
-  static uint8_t buffered_pixels_[size];
+  static uint8_t pwm_data_[num_regs * 32];
   static uint8_t pixels_[size];
   static uint8_t refresh_cycle_;
 
@@ -147,7 +146,7 @@ template<typename Latch, typename Clock, typename Data, uint8_t num_regs>
 uint8_t LedArray<Latch, Clock, Data, num_regs>::pixels_[size];
 
 template<typename Latch, typename Clock, typename Data, uint8_t num_regs>
-uint8_t LedArray<Latch, Clock, Data, num_regs>::buffered_pixels_[size];
+uint8_t LedArray<Latch, Clock, Data, num_regs>::pwm_data_[num_regs * 32];
 
 template<typename Latch, typename Clock, typename Data, uint8_t num_regs>
 uint8_t LedArray<Latch, Clock, Data, num_regs>::refresh_cycle_;
