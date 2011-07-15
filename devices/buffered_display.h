@@ -132,7 +132,7 @@ class BufferedDisplay {
       // There is a character to transmit!
       // If the new character to transmit is just after the previous one, and on
       // the same line, we're good, we don't need to reposition the cursor.
-      if ((scan_position_ == scan_position_last_write_ + 1) && scan_row_) {
+      if ((scan_position_ == scan_position_last_write_ + 1) && scan_column_) {
         // We use overwrite because we have checked before that there is
         // enough room in the buffer.
         Lcd::WriteData(character);
