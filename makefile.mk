@@ -59,10 +59,9 @@ CPPFLAGS      = -mmcu=$(MCU) -I. \
 			-fno-move-loop-invariants \
 			-fshort-enums \
 			$(EXTRA_DEFINES) \
+			$(MMC_CONFIG) \
 			-D$(MCU_DEFINE) \
 			-DSERIAL_RX_0 \
-			-DMMC_CS_PORT=$(MMC_CS_PORT) \
-			-DMMC_CS_BIT=$(MMC_CS_BIT) \
 			-mcall-prologues
 CXXFLAGS      = -fno-exceptions
 ASFLAGS       = -mmcu=$(MCU) -I. -x assembler-with-cpp

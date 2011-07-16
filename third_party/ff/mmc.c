@@ -17,8 +17,24 @@
 ---------------------------------------------------------------------------*/
 
 /* Port Controls  (Platform dependent) */
-#define CS_LOW()  MMC_CS_PORT &= ~MMC_CS_BIT     /* MMC CS = L */
-#define CS_HIGH() MMC_CS_PORT |= MMC_CS_BIT      /* MMC CS = H */
+
+// __        ___    ____  _   _ ___ _   _  ____
+// \ \      / / \  |  _ \| \ | |_ _| \ | |/ ___|
+//  \ \ /\ / / _ \ | |_) |  \| || ||  \| | |  _
+//   \ V  V / ___ \|  _ <| |\  || || |\  | |_| |
+//    \_/\_/_/   \_\_| \_\_| \_|___|_| \_|\____|
+//
+// This is utterly stupid. This will be removed when a correct version of the
+// board -- with the 74hc138 correctly wired -- will be available.
+
+#ifdef MMC_CS_SWAP
+  #define CS_HIGH()  MMC_CS_PORT &= ~(1 << MMC_CS_BIT)   /* MMC CS = H */
+  #define CS_LOW() MMC_CS_PORT |= (1 << MMC_CS_BIT)      /* MMC CS = L */
+#else
+  #define CS_LOW()  MMC_CS_PORT &= ~(1 << MMC_CS_BIT)     /* MMC CS = L */
+  #define CS_HIGH() MMC_CS_PORT |= (1 << MMC_CS_BIT)      /* MMC CS = H */
+#endif  // MMC_CS_SWAP
+
 #define SOCKWP    0   /* Write protected. yes:true, no:false, default:false */
 #define SOCKINS   1  /* Card detected.   yes:true, no:false, default:true */
 
@@ -152,21 +168,23 @@ static
 void power_on (void)
 {
   for (Timer1 = 2; Timer1; ); /* Wait for 20ms */
+#ifndef MMC_NO_SPI_INITIALIZATION
   PORTB = 0b10110101;     /* Enable drivers */
   DDRB  = 0b11000111;
-
   SPCR = 0x52;      /* Enable SPI function in mode 0 */
   SPSR = 0x01;      /* SPI 2x mode */
+#endif  // MMC_NO_SPI_INITIALIZATION
 }
 
 
 static
 void power_off (void)
 {
+#ifndef MMC_NO_SPI_INITIALIZATION
   SPCR = 0;       /* Disable SPI function */
   DDRB  = 0b11000000;   /* Disable drivers */
   PORTB = 0b10110000;
-
+#endif  // MMC_NO_SPI_INITIALIZATION
   Stat |= STA_NOINIT;
 }
 
@@ -261,8 +279,9 @@ BYTE send_cmd (   /* Returns R1 resp (bit7==1:Send failed) */
   /* Select the card and wait for ready */
   deselect();
   if (!select()) return 0xFF;
-
+  
   /* Send command packet */
+  rcvr_spi();
   xmit_spi(0x40 | cmd);       /* Start + Command index */
   xmit_spi((BYTE)(arg >> 24));    /* Argument[31..24] */
   xmit_spi((BYTE)(arg >> 16));    /* Argument[23..16] */
@@ -309,7 +328,6 @@ DSTATUS disk_initialize (
   power_on();             /* Force socket power on */
   FCLK_SLOW();
   for (n = 10; n; n--) rcvr_spi();  /* 80 dummy clocks */
-
   ty = 0;
   if (send_cmd(CMD0, 0) == 1) {     /* Enter Idle state */
     Timer1 = 100;           /* Initialization timeout of 1000 msec */
