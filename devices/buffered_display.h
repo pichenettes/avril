@@ -28,6 +28,7 @@
 
 #include "avrlib/base.h"
 #include "avrlib/log2.h"
+#include "avrlib/op.h"
 #include "avrlib/time.h"
 
 namespace avrlib {
