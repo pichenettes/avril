@@ -28,7 +28,7 @@
 
 namespace avrlib {
 
-enum FileSystemResult {
+enum FileSystemStatus {
   FS_OK = 0,
   FS_DISK_ERROR,
   FS_EXCEPTION,
@@ -47,25 +47,37 @@ enum FileSystemResult {
   FS_TIMEOUT,
   FS_LOCKED,
   FS_NOT_ENOUGH_MEMORY,
-  FS_TOO_MANY_FILES
+  FS_TOO_MANY_FILES,
+  FS_INVALID_PARAMETER,
+  FS_NO_FILE,
 };
+
+
+// TODO:
+// FAT version
+// SD version
+//
+// FRESULT f_opendir (DIR*, const TCHAR*);       /* Open an existing directory */
+// FRESULT f_readdir (DIR*, FILINFO*);         /* Read a directory item */
+// FRESULT f_stat (const TCHAR*, FILINFO*);      /* Get file status */
+// FRESULT f_utime (const TCHAR*, const FILINFO*);   /* Change timestamp of the 
 
 class FileSystem {
  public:
   FileSystem() { }
   
-  static FileSystemResult Init();
-  static FileSystemResult Init(uint16_t timeout_ms);
+  static FileSystemStatus Init();
+  static FileSystemStatus Init(uint16_t timeout_ms);
   
-  static FileSystemResult Unlink(const char* file_name);
-  static FileSystemResult Mkdir(const char* dir_name);
-  static FileSystemResult Mkdirs(const char* path);
-  static FileSystemResult Chmod(
+  static FileSystemStatus Unlink(const char* file_name);
+  static FileSystemStatus Mkdir(const char* dir_name);
+  static FileSystemStatus Mkdirs(const char* path);
+  static FileSystemStatus Chmod(
       const char* file_name,
       uint8_t value,
       uint8_t mask);
-  static FileSystemResult Rename(const char* old_name, const char* new_name);
-  static FileSystemResult Mkfs();
+  static FileSystemStatus Rename(const char* old_name, const char* new_name);
+  static FileSystemStatus Mkfs();
   
   static uint32_t GetFreeSpace();
   

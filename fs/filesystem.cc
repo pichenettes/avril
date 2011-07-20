@@ -28,17 +28,13 @@ namespace avrlib {
 FATFS FileSystem::fs_;
 
 /* static */
-FileSystemResult FileSystem::Init() {
+FileSystemStatus FileSystem::Init() {
   f_mount(0, &fs_);
-  if (disk_initialize(0)) {
-    return FS_DISK_ERROR;
-  } else {
-    return FS_OK;
-  }
+  return disk_initialize(0) ? FS_DISK_ERROR : FS_OK;
 }
 
 /* static */
-FileSystemResult FileSystem::Init(uint16_t timeout_ms) {
+FileSystemStatus FileSystem::Init(uint16_t timeout_ms) {
   f_mount(0, &fs_);
   for (uint32_t t = milliseconds() + timeout_ms; milliseconds() < t; ) {
     if (!disk_initialize(0)) {
@@ -49,38 +45,38 @@ FileSystemResult FileSystem::Init(uint16_t timeout_ms) {
 }
 
 /* static */
-FileSystemResult FileSystem::Unlink(const char* file_name) {
-  return static_cast<FileSystemResult>(f_unlink(file_name));
+FileSystemStatus FileSystem::Unlink(const char* file_name) {
+  return static_cast<FileSystemStatus>(f_unlink(file_name));
 }
 
 /* static */
-FileSystemResult FileSystem::Mkdir(const char* dir_name) {
-  return static_cast<FileSystemResult>(f_mkdir(dir_name));
+FileSystemStatus FileSystem::Mkdir(const char* dir_name) {
+  return static_cast<FileSystemStatus>(f_mkdir(dir_name));
 }
 
 /* static */
-FileSystemResult FileSystem::Mkdirs(const char* path) {
-  return static_cast<FileSystemResult>(f_mkdir(path));
+FileSystemStatus FileSystem::Mkdirs(const char* path) {
+  return static_cast<FileSystemStatus>(f_mkdir(path));
 }
 
 /* static */
-FileSystemResult FileSystem::Chmod(
+FileSystemStatus FileSystem::Chmod(
     const char* file_name,
     uint8_t value,
     uint8_t mask) {
-  return static_cast<FileSystemResult>(f_chmod(file_name, value, mask));
+  return static_cast<FileSystemStatus>(f_chmod(file_name, value, mask));
 }
 
 /* static */
-FileSystemResult FileSystem::Rename(
+FileSystemStatus FileSystem::Rename(
     const char* old_name,
     const char* new_name) {
-  return static_cast<FileSystemResult>(f_rename(old_name, new_name));
+  return static_cast<FileSystemStatus>(f_rename(old_name, new_name));
 }
 
 /* static */
-FileSystemResult FileSystem::Mkfs() {
-  return static_cast<FileSystemResult>(f_mkfs(0, 0, 0));
+FileSystemStatus FileSystem::Mkfs() {
+  return static_cast<FileSystemStatus>(f_mkfs(0, 0, 0));
 }
   
 /* static */
