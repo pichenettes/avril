@@ -17,7 +17,7 @@
 //
 // FatFS wrappers.
 
-#include "avrlib/fs/file.h"
+#include "avrlib/filesystem/file.h"
 
 namespace avrlib {
 

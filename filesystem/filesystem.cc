@@ -17,7 +17,7 @@
 //
 // FatFS wrappers.
 
-#include "avrlib/fs/filesystem.h"
+#include "avrlib/filesystem/filesystem.h"
 
 #include "avrlib/third_party/ff/diskio.h"
 #include "avrlib/time.h"

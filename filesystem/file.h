@@ -17,14 +17,14 @@
 //
 // FatFS wrappers.
 
-#ifndef AVRLIB_FS_FILE_H_
-#define AVRLIB_FS_FILE_H_
+#ifndef AVRLIB_FILESYSTEM_FILE_H_
+#define AVRLIB_FILESYSTEM_FILE_H_
 
 #include <string.h>
 
 #include "avrlib/avrlib.h"
 
-#include "avrlib/fs/filesystem.h"
+#include "avrlib/filesystem/filesystem.h"
 
 namespace avrlib {
 
@@ -92,4 +92,4 @@ class File {
 
 }  // namespace avrlib
 
-#endif   // AVRLIB_FS_FILE_H_
+#endif   // AVRLIB_FILESYSTEM_FILE_H_
