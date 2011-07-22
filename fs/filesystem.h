@@ -49,7 +49,66 @@ enum FileSystemStatus {
   FS_NOT_ENOUGH_MEMORY,
   FS_TOO_MANY_FILES,
   FS_INVALID_PARAMETER,
-  FS_NO_FILE,
+  FS_NOT_OPENED,
+};
+
+enum FileAttribute {
+  FS_ATTRIBUTE_READ_ONLY = 1,
+  FS_ATTRIBUTE_HIDDEN = 2,
+  FS_ATTRIBUTE_SYSTEM = 4,
+  FS_ATTRIBUTE_VOLUME = 8,
+  FS_ATTRIBUTE_LFN = 15,
+  FS_ATTRIBUTE_DIRECTORY = 16,
+  FS_ATTRIBUTE_ARCHIVE = 32,
+  FS_ATTRIBUTE_ATTRIBUTES = 0x3f,
+};
+
+struct FileInfo {
+  inline uint32_t size() const {
+    return file_info.fsize;
+  }
+  
+  inline uint16_t modification_date() const {
+    return file_info.fdate;
+  }
+  
+  inline uint16_t modification_time() const {
+    return file_info.ftime;
+  }
+
+  inline uint8_t attributes() const {
+    return file_info.fattrib;
+  }
+  
+  inline uint8_t is_read_only() const {
+    return file_info.fattrib & FS_ATTRIBUTE_READ_ONLY;
+  }
+
+  inline uint8_t is_hidden() const {
+    return file_info.fattrib & FS_ATTRIBUTE_HIDDEN;
+  }
+
+  inline uint8_t is_system() const {
+    return file_info.fattrib & FS_ATTRIBUTE_SYSTEM;
+  }
+
+  inline uint8_t is_volume() const {
+    return file_info.fattrib & FS_ATTRIBUTE_VOLUME;
+  }
+
+  inline uint8_t is_directory() const {
+    return file_info.fattrib & FS_ATTRIBUTE_DIRECTORY;
+  }
+
+  inline uint8_t is_archive() const {
+    return file_info.fattrib & FS_ATTRIBUTE_ARCHIVE;
+  }
+  
+  inline const char* name() const {
+    return file_info.fname;
+  }
+  
+  FILINFO file_info;
 };
 
 
@@ -57,8 +116,6 @@ enum FileSystemStatus {
 // FAT version
 // SD version
 //
-// FRESULT f_opendir (DIR*, const TCHAR*);       /* Open an existing directory */
-// FRESULT f_readdir (DIR*, FILINFO*);         /* Read a directory item */
 // FRESULT f_stat (const TCHAR*, FILINFO*);      /* Get file status */
 // FRESULT f_utime (const TCHAR*, const FILINFO*);   /* Change timestamp of the 
 
@@ -77,6 +134,12 @@ class FileSystem {
       uint8_t value,
       uint8_t mask);
   static FileSystemStatus Rename(const char* old_name, const char* new_name);
+  static FileSystemStatus FileStatus(const char* file_name, FileInfo* info);
+  static FileSystemStatus Utime(
+      const char* file_name,
+      uint16_t date,
+      uint16_t time);
+  
   static FileSystemStatus Mkfs();
   
   static uint32_t GetFreeSpace();

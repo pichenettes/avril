@@ -42,8 +42,23 @@ class File {
   File();
   ~File();
   
-  FileSystemStatus Open(const char* file_name, const char* mode);
-  FileSystemStatus Open(const char* file_name, uint8_t attributes);
+  FileSystemStatus Open(const char* file_name, const char* mode) {
+    return Open(file_name, mode, 0);
+  }
+  
+  FileSystemStatus Open(const char* file_name, uint8_t attributes) {
+    return Open(file_name, attributes, 0);
+  }
+  
+  FileSystemStatus Open(
+      const char* file_name,
+      const char* mode,
+      uint16_t retry_timeout);
+  FileSystemStatus Open(
+      const char* file_name,
+      uint8_t attributes,
+      uint16_t retry_timeout);  
+  
   FileSystemStatus Seek(uint32_t position);
   FileSystemStatus Close();
   FileSystemStatus Truncate();
@@ -63,10 +78,6 @@ class File {
     return Write(data, size, &written) == FS_OK ? written : 0;
   }
   
-  inline void set_retry_timeout(uint16_t retry_timeout) {
-    retry_timeout_ = retry_timeout;
-  }
-  
   uint8_t eof() const { return f_eof(&f_); }
   uint8_t error() const { return f_error(&f_); }
   uint32_t tell() const { return f_tell(&f_); }
@@ -74,7 +85,6 @@ class File {
   
  private:
   uint8_t opened_;
-  uint16_t retry_timeout_;
   FIL f_;
   
   DISALLOW_COPY_AND_ASSIGN(File);

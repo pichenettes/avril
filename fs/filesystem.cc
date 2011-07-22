@@ -87,4 +87,20 @@ uint32_t FileSystem::GetFreeSpace() {
   return free_clusters * p->csize * 512;  // 0 if error.
 }
 
+/* static */
+FileSystemStatus FileSystem::FileStatus(const char* file_name, FileInfo* info) {
+  return static_cast<FileSystemStatus>(f_stat(file_name, &info->file_info));
+}
+
+/* static */
+FileSystemStatus FileSystem::Utime(
+    const char* file_name,
+    uint16_t date,
+    uint16_t time) {
+  FILINFO f;
+  f.fdate = date;
+  f.ftime = time;
+  return static_cast<FileSystemStatus>(f_utime(file_name, &f));
+}
+
 }  // namespace avrlib
