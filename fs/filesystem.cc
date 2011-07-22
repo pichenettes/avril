@@ -25,16 +25,16 @@
 namespace avrlib {
 
 /* static */
-FATFS FileSystem::fs_;
+FATFS Filesystem::fs_;
 
 /* static */
-FileSystemStatus FileSystem::Init() {
+FilesystemStatus Filesystem::Init() {
   f_mount(0, &fs_);
   return disk_initialize(0) ? FS_DISK_ERROR : FS_OK;
 }
 
 /* static */
-FileSystemStatus FileSystem::Init(uint16_t timeout_ms) {
+FilesystemStatus Filesystem::Init(uint16_t timeout_ms) {
   f_mount(0, &fs_);
   for (uint32_t t = milliseconds() + timeout_ms; milliseconds() < t; ) {
     if (!disk_initialize(0)) {
@@ -45,42 +45,42 @@ FileSystemStatus FileSystem::Init(uint16_t timeout_ms) {
 }
 
 /* static */
-FileSystemStatus FileSystem::Unlink(const char* file_name) {
-  return static_cast<FileSystemStatus>(f_unlink(file_name));
+FilesystemStatus Filesystem::Unlink(const char* file_name) {
+  return static_cast<FilesystemStatus>(f_unlink(file_name));
 }
 
 /* static */
-FileSystemStatus FileSystem::Mkdir(const char* dir_name) {
-  return static_cast<FileSystemStatus>(f_mkdir(dir_name));
+FilesystemStatus Filesystem::Mkdir(const char* dir_name) {
+  return static_cast<FilesystemStatus>(f_mkdir(dir_name));
 }
 
 /* static */
-FileSystemStatus FileSystem::Mkdirs(const char* path) {
-  return static_cast<FileSystemStatus>(f_mkdir(path));
+FilesystemStatus Filesystem::Mkdirs(const char* path) {
+  return static_cast<FilesystemStatus>(f_mkdir(path));
 }
 
 /* static */
-FileSystemStatus FileSystem::Chmod(
+FilesystemStatus Filesystem::Chmod(
     const char* file_name,
     uint8_t value,
     uint8_t mask) {
-  return static_cast<FileSystemStatus>(f_chmod(file_name, value, mask));
+  return static_cast<FilesystemStatus>(f_chmod(file_name, value, mask));
 }
 
 /* static */
-FileSystemStatus FileSystem::Rename(
+FilesystemStatus Filesystem::Rename(
     const char* old_name,
     const char* new_name) {
-  return static_cast<FileSystemStatus>(f_rename(old_name, new_name));
+  return static_cast<FilesystemStatus>(f_rename(old_name, new_name));
 }
 
 /* static */
-FileSystemStatus FileSystem::Mkfs() {
-  return static_cast<FileSystemStatus>(f_mkfs(0, 0, 0));
+FilesystemStatus Filesystem::Mkfs() {
+  return static_cast<FilesystemStatus>(f_mkfs(0, 0, 0));
 }
   
 /* static */
-uint32_t FileSystem::GetFreeSpace() {
+uint32_t Filesystem::GetFreeSpace() {
   FATFS* p;
   DWORD free_clusters = 0;
   f_getfree("/", &free_clusters, &p);
@@ -88,19 +88,19 @@ uint32_t FileSystem::GetFreeSpace() {
 }
 
 /* static */
-FileSystemStatus FileSystem::FileStatus(const char* file_name, FileInfo* info) {
-  return static_cast<FileSystemStatus>(f_stat(file_name, &info->file_info));
+FilesystemStatus Filesystem::FileStatus(const char* file_name, FileInfo* info) {
+  return static_cast<FilesystemStatus>(f_stat(file_name, &info->file_info));
 }
 
 /* static */
-FileSystemStatus FileSystem::Utime(
+FilesystemStatus Filesystem::Utime(
     const char* file_name,
     uint16_t date,
     uint16_t time) {
   FILINFO f;
   f.fdate = date;
   f.ftime = time;
-  return static_cast<FileSystemStatus>(f_utime(file_name, &f));
+  return static_cast<FilesystemStatus>(f_utime(file_name, &f));
 }
 
 }  // namespace avrlib

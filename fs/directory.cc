@@ -21,11 +21,11 @@
 
 namespace avrlib {
 
-FileSystemStatus Directory::Open(
+FilesystemStatus Directory::Open(
     const char* directory_name,
     uint16_t retry_timeout) {
-  FileSystemStatus s;
-  s = static_cast<FileSystemStatus>(f_opendir(&d_, directory_name));
+  FilesystemStatus s;
+  s = static_cast<FilesystemStatus>(f_opendir(&d_, directory_name));
   if (s == FS_DISK_ERROR && retry_timeout) {
     // If an open fails because of a disk access error, try to reinitialize the
     // disk access layer. This might happen because a process in the background
@@ -33,18 +33,18 @@ FileSystemStatus Directory::Open(
     // another device). It is OK to have the disk access layer disabled between
     // file access "sessions" -- but it is not OK to have it disabled during a
     // session.
-    FileSystem::Init(retry_timeout);
-    s = static_cast<FileSystemStatus>(f_opendir(&d_, directory_name));
+    Filesystem::Init(retry_timeout);
+    s = static_cast<FilesystemStatus>(f_opendir(&d_, directory_name));
   }
   return s;
 }
 
-FileSystemStatus Directory::Next() {
-  return static_cast<FileSystemStatus>(f_readdir(&d_, &f_.file_info));
+FilesystemStatus Directory::Next() {
+  return static_cast<FilesystemStatus>(f_readdir(&d_, &f_.file_info));
 }
 
-FileSystemStatus Directory::Rewind() {
-  return static_cast<FileSystemStatus>(f_readdir(&d_, NULL));
+FilesystemStatus Directory::Rewind() {
+  return static_cast<FilesystemStatus>(f_readdir(&d_, NULL));
 }
 
 

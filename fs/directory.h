@@ -32,12 +32,12 @@ class Directory {
  public:
   Directory() { }
 
-  FileSystemStatus Open(const char* directory_name) {
+  FilesystemStatus Open(const char* directory_name) {
     return Open(directory_name, 0);
   }
-  FileSystemStatus Open(const char* directory_name, uint16_t retry_timeout);
-  FileSystemStatus Rewind();
-  FileSystemStatus Next();
+  FilesystemStatus Open(const char* directory_name, uint16_t retry_timeout);
+  FilesystemStatus Rewind();
+  FilesystemStatus Next();
   
   inline uint8_t done() const { return f_.file_info.fname[0] == '\0'; }
   

@@ -32,7 +32,7 @@ File::~File() {
   }
 }
 
-FileSystemStatus File::Open(
+FilesystemStatus File::Open(
     const char* file_name,
     const char* mode,
     uint16_t retry_timeout) {
@@ -45,7 +45,7 @@ FileSystemStatus File::Open(
   }
 }
 
-FileSystemStatus File::Open(
+FilesystemStatus File::Open(
     const char* file_name,
     uint8_t attributes,
     uint16_t retry_timeout) {
@@ -53,8 +53,8 @@ FileSystemStatus File::Open(
     Close();
   }
   
-  FileSystemStatus s;
-  s = static_cast<FileSystemStatus>(f_open(&f_, file_name, attributes));
+  FilesystemStatus s;
+  s = static_cast<FilesystemStatus>(f_open(&f_, file_name, attributes));
   if (s == FS_DISK_ERROR && retry_timeout) {
     // If an open fails because of a disk access error, try to reinitialize the
     // disk access layer. This might happen because a process in the background
@@ -62,51 +62,51 @@ FileSystemStatus File::Open(
     // another device). It is OK to have the disk access layer disabled between
     // file access "sessions" -- but it is not OK to have it disabled during a
     // session.
-    FileSystem::Init(retry_timeout);
-    s = static_cast<FileSystemStatus>(f_open(&f_, file_name, attributes));
+    Filesystem::Init(retry_timeout);
+    s = static_cast<FilesystemStatus>(f_open(&f_, file_name, attributes));
   }
 
   opened_ = s == FS_OK;
   return s;
 }
 
-FileSystemStatus File::Seek(uint32_t position) {
+FilesystemStatus File::Seek(uint32_t position) {
   if (!opened_) {
     return FS_NOT_OPENED;
   }
   
-  return static_cast<FileSystemStatus>(f_lseek(&f_, position));
+  return static_cast<FilesystemStatus>(f_lseek(&f_, position));
 }
 
-FileSystemStatus File::Close() {
-  return static_cast<FileSystemStatus>(f_close(&f_));
+FilesystemStatus File::Close() {
+  return static_cast<FilesystemStatus>(f_close(&f_));
 }
 
-FileSystemStatus File::Truncate() {
+FilesystemStatus File::Truncate() {
   if (!opened_) {
     return FS_NOT_OPENED;
   }
   
-  return static_cast<FileSystemStatus>(f_truncate(&f_));
+  return static_cast<FilesystemStatus>(f_truncate(&f_));
 }
 
-FileSystemStatus File::Sync() {
+FilesystemStatus File::Sync() {
   if (!opened_) {
     return FS_NOT_OPENED;
   }
   
-  return static_cast<FileSystemStatus>(f_sync(&f_));
+  return static_cast<FilesystemStatus>(f_sync(&f_));
 }
 
-FileSystemStatus File::Read(uint8_t* data, uint16_t size, uint16_t* read) {
+FilesystemStatus File::Read(uint8_t* data, uint16_t size, uint16_t* read) {
   if (!opened_) {
     return FS_NOT_OPENED;
   }
   
-  return static_cast<FileSystemStatus>(f_read(&f_, data, size, read));
+  return static_cast<FilesystemStatus>(f_read(&f_, data, size, read));
 }
 
-FileSystemStatus File::Write(
+FilesystemStatus File::Write(
     const uint8_t* data,
     uint16_t size,
     uint16_t* written) {
@@ -114,7 +114,7 @@ FileSystemStatus File::Write(
     return FS_NOT_OPENED;
   }
 
-  return static_cast<FileSystemStatus>(f_write(&f_, data, size, written));
+  return static_cast<FilesystemStatus>(f_write(&f_, data, size, written));
 }
 
 }  // namespace avrlib

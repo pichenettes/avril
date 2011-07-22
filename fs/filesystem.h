@@ -28,7 +28,7 @@
 
 namespace avrlib {
 
-enum FileSystemStatus {
+enum FilesystemStatus {
   FS_OK = 0,
   FS_DISK_ERROR,
   FS_EXCEPTION,
@@ -119,35 +119,37 @@ struct FileInfo {
 // FRESULT f_stat (const TCHAR*, FILINFO*);      /* Get file status */
 // FRESULT f_utime (const TCHAR*, const FILINFO*);   /* Change timestamp of the 
 
-class FileSystem {
+class Filesystem {
  public:
-  FileSystem() { }
+  Filesystem() { }
   
-  static FileSystemStatus Init();
-  static FileSystemStatus Init(uint16_t timeout_ms);
+  static FilesystemStatus Init();
+  static FilesystemStatus Init(uint16_t timeout_ms);
   
-  static FileSystemStatus Unlink(const char* file_name);
-  static FileSystemStatus Mkdir(const char* dir_name);
-  static FileSystemStatus Mkdirs(const char* path);
-  static FileSystemStatus Chmod(
+  static FilesystemStatus Unlink(const char* file_name);
+  static FilesystemStatus Mkdir(const char* dir_name);
+  static FilesystemStatus Mkdirs(const char* path);
+  static FilesystemStatus Chmod(
       const char* file_name,
       uint8_t value,
       uint8_t mask);
-  static FileSystemStatus Rename(const char* old_name, const char* new_name);
-  static FileSystemStatus FileStatus(const char* file_name, FileInfo* info);
-  static FileSystemStatus Utime(
+  static FilesystemStatus Rename(const char* old_name, const char* new_name);
+  static FilesystemStatus FileStatus(const char* file_name, FileInfo* info);
+  static FilesystemStatus Utime(
       const char* file_name,
       uint16_t date,
       uint16_t time);
   
-  static FileSystemStatus Mkfs();
+  static FilesystemStatus Mkfs();
   
   static uint32_t GetFreeSpace();
+  
+  static uint8_t* buffer() { return fs_.win; }
   
  private:
   static FATFS fs_;
   
-  DISALLOW_COPY_AND_ASSIGN(FileSystem);
+  DISALLOW_COPY_AND_ASSIGN(Filesystem);
 };
 
 }  // namespace avrlib

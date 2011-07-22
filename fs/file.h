@@ -42,29 +42,29 @@ class File {
   File();
   ~File();
   
-  FileSystemStatus Open(const char* file_name, const char* mode) {
+  FilesystemStatus Open(const char* file_name, const char* mode) {
     return Open(file_name, mode, 0);
   }
   
-  FileSystemStatus Open(const char* file_name, uint8_t attributes) {
+  FilesystemStatus Open(const char* file_name, uint8_t attributes) {
     return Open(file_name, attributes, 0);
   }
   
-  FileSystemStatus Open(
+  FilesystemStatus Open(
       const char* file_name,
       const char* mode,
       uint16_t retry_timeout);
-  FileSystemStatus Open(
+  FilesystemStatus Open(
       const char* file_name,
       uint8_t attributes,
       uint16_t retry_timeout);  
   
-  FileSystemStatus Seek(uint32_t position);
-  FileSystemStatus Close();
-  FileSystemStatus Truncate();
-  FileSystemStatus Sync();
-  FileSystemStatus Read(uint8_t* data, uint16_t size, uint16_t* read);
-  FileSystemStatus Write(
+  FilesystemStatus Seek(uint32_t position);
+  FilesystemStatus Close();
+  FilesystemStatus Truncate();
+  FilesystemStatus Sync();
+  FilesystemStatus Read(uint8_t* data, uint16_t size, uint16_t* read);
+  FilesystemStatus Write(
       const uint8_t* data,
       uint16_t size,
       uint16_t* written);
