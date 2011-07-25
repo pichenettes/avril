@@ -25,6 +25,7 @@
 #include "avrlib/avrlib.h"
 
 #include "avrlib/third_party/ff/ff.h"
+#include "avrlib/third_party/ff/mmc.h"
 
 namespace avrlib {
 
@@ -50,6 +51,7 @@ enum FilesystemStatus {
   FS_TOO_MANY_FILES,
   FS_INVALID_PARAMETER,
   FS_NOT_OPENED,
+  FS_BAD_FILE_FORMAT
 };
 
 enum FileAttribute {
@@ -143,6 +145,15 @@ class Filesystem {
   static FilesystemStatus Mkfs();
   
   static uint32_t GetFreeSpace();
+  static uint16_t GetType() {
+    uint8_t card_type;
+    disk_ioctl(0, MMC_GET_TYPE, &card_type);
+    return fs_.fs_type | (card_type << 8);
+  }
+  
+  static inline void Tick() {
+    disk_timerproc();
+  }
   
   static uint8_t* buffer() { return fs_.win; }
   

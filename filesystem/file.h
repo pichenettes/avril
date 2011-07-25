@@ -69,6 +69,23 @@ class File {
       uint16_t size,
       uint16_t* written);
   
+  FilesystemStatus Write(
+      const char* data,
+      uint16_t size,
+      uint16_t* written) {
+        return Write(static_cast<const uint8_t*>(static_cast<const void*>(
+            data)), size, written);
+  }
+
+  FilesystemStatus Read(
+      char* data,
+      uint16_t size,
+      uint16_t* read) {
+        return Read(static_cast<uint8_t*>(static_cast<void*>(
+            data)), size, read);
+  }
+
+  
   uint16_t Read(uint8_t* data, uint16_t size) {
     uint16_t read;
     return Read(data, size, &read) == FS_OK ? read : 0;
