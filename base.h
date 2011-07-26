@@ -48,6 +48,11 @@ struct uint24c_t {
   uint8_t fractional;
 };
 
+template<uint32_t a, uint32_t b, uint32_t c, uint32_t d>
+struct FourCC {
+  static const uint32_t value = (((((d << 8) | c) << 8) | b) << 8) | a;
+};
+
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&);               \
   void operator=(const TypeName&)
