@@ -113,14 +113,6 @@ struct FileInfo {
   FILINFO file_info;
 };
 
-
-// TODO:
-// FAT version
-// SD version
-//
-// FRESULT f_stat (const TCHAR*, FILINFO*);      /* Get file status */
-// FRESULT f_utime (const TCHAR*, const FILINFO*);   /* Change timestamp of the 
-
 class Filesystem {
  public:
   Filesystem() { }
@@ -130,7 +122,7 @@ class Filesystem {
   
   static FilesystemStatus Unlink(const char* file_name);
   static FilesystemStatus Mkdir(const char* dir_name);
-  static FilesystemStatus Mkdirs(const char* path);
+  static FilesystemStatus Mkdirs(char* path);
   static FilesystemStatus Chmod(
       const char* file_name,
       uint8_t value,

@@ -53,8 +53,19 @@ FilesystemStatus Filesystem::Mkdir(const char* dir_name) {
 }
 
 /* static */
-FilesystemStatus Filesystem::Mkdirs(const char* path) {
-  return static_cast<FilesystemStatus>(f_mkdir(path));
+FilesystemStatus Filesystem::Mkdirs(char* path) {
+  for (char* p = path + 1; *p; ++p) {
+    // For each path prefix, attempt to create the path.
+    if (*p == '/') {
+      *p = '\0';
+      FilesystemStatus status = Mkdir(path);
+      *p = '/';
+      if (status != FS_OK && status != FS_FILE_EXISTS) {
+        return status;
+      }
+    }
+  }
+  return FS_OK;
 }
 
 /* static */
