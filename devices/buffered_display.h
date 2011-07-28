@@ -94,6 +94,19 @@ class BufferedDisplay {
   static inline void set_status(uint8_t status) {
     status_ = status + 1;
   }
+  
+  static inline void ForceStatus(uint8_t status) {
+    if (Lcd::writable() < 4) {
+      return;
+    }
+    status_ = status + 1;
+    scan_position_ = 0;
+    scan_row_ = 0;
+    scan_column_ = 0;
+    Lcd::MoveCursor(scan_row_, scan_column_);
+    Lcd::WriteData(status_ - 1);
+    remote_[scan_position_] = status_ - 1;
+  }
 
   static void Tick() {
     // The following code is likely to write 4 bytes at most. If there are less
