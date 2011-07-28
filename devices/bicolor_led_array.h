@@ -74,11 +74,15 @@ class LedArray {
   static inline void set_pixel(uint8_t index, uint8_t intensity) {
     buffered_pixels_[index] = intensity;
   }
+
+  static inline void set_direct_pixel(uint8_t index, uint8_t intensity) {
+    pixels_[index] = intensity;
+  }
   
   static inline uint8_t pixel(uint8_t index) {
     return buffered_pixels_[index];
   }
-  
+
   static inline void ShiftOutData(uint8_t v) {
     Register::ShiftOut(v);
   }
