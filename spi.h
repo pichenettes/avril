@@ -161,7 +161,7 @@ class SpiSlave {
     SPCR = configuration;
   }
 
-  static inline uint8_t Read(uint8_t v) {
+  static inline uint8_t Read() {
     while (!TransferComplete::value());
     return SPDR;
   }
