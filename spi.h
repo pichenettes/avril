@@ -99,6 +99,13 @@ class SpiMaster {
     End();
   }
   
+  static inline uint8_t Read() {
+    Begin();
+    uint8_t result = Receive();
+    End();
+    return result;
+  }
+  
   static inline void Send(uint8_t v) {
     Overwrite(v);
     Wait();
