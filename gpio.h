@@ -119,11 +119,7 @@ struct GpioImpl {
     OutputBit::clear();
   }
   static inline void Toggle() {
-    if (value()) {
-      Low();
-    } else {
-      High();
-    }
+    OutputBit::toggle();
   }
   static inline void set_value(uint8_t value) {
     if (value == 0) {
