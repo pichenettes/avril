@@ -118,6 +118,13 @@ struct GpioImpl {
     }
     OutputBit::clear();
   }
+  static inline void Toggle() {
+    if (value()) {
+      Low();
+    } else {
+      High();
+    }
+  }
   static inline void set_value(uint8_t value) {
     if (value == 0) {
       Low();
@@ -151,6 +158,7 @@ struct Gpio {
   typedef GpioImpl<port, NoPwmChannel, bit, false> Impl;
   static void High() { Impl::High(); }
   static void Low() { Impl::Low(); }
+  static void Toggle() { Impl::Toggle(); }
   static void set_mode(uint8_t mode) { Impl::set_mode(mode); }
   static void set_value(uint8_t value) { Impl::set_value(value); }
   static void set_analog_value(uint8_t value) { Impl::set_analog_value(value); }

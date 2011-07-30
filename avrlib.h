@@ -69,6 +69,9 @@ struct BitInRegister {
   static void set() {
     *Register::ptr() |= _BV(bit);
   }
+  static void toggle() {
+    *Register::ptr() ^= _BV(bit);
+  }
   static uint8_t value() {
     return *Register::ptr() & _BV(bit) ? 1 : 0;
   }
