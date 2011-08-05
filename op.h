@@ -497,6 +497,57 @@ static inline uint8_t InterpolateSample(
 
 #else
 
+static inline uint24c_t U24AddC(uint24_t a, uint24_t b) {
+  uint24c_t result;
+  
+  uint32_t av = static_cast<uint32_t>(a.integral) << 8;
+  av += a.fractional;
+  
+  uint32_t bv = static_cast<uint32_t>(b.integral) << 8;
+  bv += b.fractional;
+  
+  uint32_t sum = av + bv;
+  result.integral = sum >> 8;
+  result.fractional = sum & 0xff;
+  result.carry = (sum & 0xff000000) != 0;
+  return result;
+}
+
+static inline uint24_t U24Add(uint24_t a, uint24_t b) {
+  uint24_t result;
+  
+  uint32_t av = static_cast<uint32_t>(a.integral) << 8;
+  av += a.fractional;
+  
+  uint32_t bv = static_cast<uint32_t>(b.integral) << 8;
+  bv += b.fractional;
+  
+  uint32_t sum = av + bv;
+  result.integral = sum >> 8;
+  result.fractional = sum & 0xff;
+  return result;
+}
+
+static inline uint24_t U24ShiftRight(uint24_t a) {
+  uint24_t result;
+  uint32_t av = static_cast<uint32_t>(a.integral) << 8;
+  av += a.fractional;
+  av >>= 1;
+  result.integral = av >> 8;
+  result.fractional = av & 0xff;
+  return result;
+}
+
+static inline uint24_t U24ShiftLeft(uint24_t a) {
+  uint24_t result;
+  uint32_t av = static_cast<uint32_t>(a.integral) << 8;
+  av += a.fractional;
+  av <<= 1;
+  result.integral = av >> 8;
+  result.fractional = av & 0xff;
+  return result;
+}
+
 static inline uint8_t S16ClipU8(int16_t value) {
   return value < 0 ? 0 : (value > 255 ? 255 : value);
 }
@@ -524,10 +575,10 @@ static inline uint16_t U8MixU16(uint8_t a, uint8_t b, uint8_t balance) {
 }
 
 static inline uint8_t U8U4MixU8(uint8_t a, uint8_t b, uint8_t balance) {
-  return a * (15 - balance) + b * balance >> 4;
+  return (a * (15 - balance) + b * balance) >> 4;
 }
 
-static inline uint8_t U8U4MixU12(uint8_t a, uint8_t b, uint8_t balance) {
+static inline uint16_t U8U4MixU12(uint8_t a, uint8_t b, uint8_t balance) {
   return a * (15 - balance) + b * balance;
 }
 
