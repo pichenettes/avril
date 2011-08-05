@@ -220,6 +220,8 @@ fuses:
 # Program (fuses + firmware) a blank chip
 # ------------------------------------------------------------------------------
 
+bootstrap: bake
+
 bake:	$(FIRMWARE)
 		echo "sck 10\nquit\n" | $(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -tuF
 		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -u \
