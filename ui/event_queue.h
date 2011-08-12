@@ -106,4 +106,4 @@ uint32_t EventQueue<size>::last_event_time_;
 
 }  // namespace avrlib
 
-#endif AVRLIB_UI_EVENT_QUEUE_H_
+#endif  // AVRLIB_UI_EVENT_QUEUE_H_

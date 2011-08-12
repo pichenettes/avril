@@ -185,4 +185,4 @@ struct SoftwareSerialOutput {
 
 }  // namespace avrlib
 
-#endif AVRLIB_SOFTWARE_SERIAL_H_
+#endif  // AVRLIB_SOFTWARE_SERIAL_H_

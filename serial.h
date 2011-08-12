@@ -265,7 +265,7 @@ typedef SerialPort<
     kSerialOutputBufferSize,
     kSerialInputBufferSize> SerialPort0;
 
-#endif // #ifdef HAS_USART0
+#endif  // #ifdef HAS_USART0
 
 
 #ifdef HAS_USART1
@@ -295,4 +295,4 @@ typedef SerialPort<
 
 }  // namespace avrlib
 
-#endif AVRLIB_SERIAL_H_
+#endif  // AVRLIB_SERIAL_H_
