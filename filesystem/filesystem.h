@@ -51,7 +51,8 @@ enum FilesystemStatus {
   FS_TOO_MANY_FILES,
   FS_INVALID_PARAMETER,
   FS_NOT_OPENED,
-  FS_BAD_FILE_FORMAT
+  FS_BAD_FILE_FORMAT,
+  FS_COPY_ERROR
 };
 
 enum FileAttribute {

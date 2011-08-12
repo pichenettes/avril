@@ -172,9 +172,17 @@ class SpiSlave {
     SPDR = value;
   }
   
-  static inline uint8_t Read() {
-    while (!TransferComplete::value());
+  static inline uint8_t readable() {
+    return TransferComplete::value();
+  }
+  
+  static inline uint8_t ImmediateRead() {
     return SPDR;
+  }
+  
+  static inline uint8_t Read() {
+    while (!readable());
+    return ImmediateRead();
   }
 };
 
