@@ -57,6 +57,7 @@ class SpiMaster {
     if (order == LSB_FIRST) {
       configuration |= _BV(DORD);
     }
+    DoubleSpeed::clear();
     switch (speed) {
       case 2:
         DoubleSpeed::set();
