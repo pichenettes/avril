@@ -28,14 +28,14 @@ FATFS Filesystem::fs_;
 /* static */
 FilesystemStatus Filesystem::Init() {
   f_mount(0, &fs_);
-  return disk_initialize(0) ? FS_DISK_ERROR : FS_OK;
+  return (disk_initialize(0) & STA_NOINIT) ? FS_DISK_ERROR : FS_OK;
 }
 
 /* static */
 FilesystemStatus Filesystem::Init(uint16_t timeout_ms) {
   f_mount(0, &fs_);
   for (uint32_t t = milliseconds() + timeout_ms; milliseconds() < t; ) {
-    if (!disk_initialize(0)) {
+    if (!(disk_initialize(0) & STA_NOINIT)) {
       return FS_OK;
     }
   }
