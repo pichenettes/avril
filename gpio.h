@@ -40,7 +40,7 @@ namespace avrlib {
 enum PinMode {
   DIGITAL_INPUT = 0,
   DIGITAL_OUTPUT = 1,
-  ANALOG_OUTPUT = 2
+  PWM_OUTPUT = 2
 };
 
 // All the registers used in the following definitions are wrapped here.
@@ -84,38 +84,30 @@ typedef Port<PINARegister, PORTARegister, DDRARegister> PortA;
 // The actual implementation of a pin, not very convenient to use because it
 // requires the actual parameters of the pin to be passed as template
 // arguments.
-template<typename Port, typename PwmChannel, uint8_t bit, bool safe>
+template<typename Port, typename PwmChannel, uint8_t bit>
 struct GpioImpl {
   typedef BitInRegister<typename Port::Mode, bit> ModeBit;
   typedef BitInRegister<typename Port::Output, bit> OutputBit;
   typedef BitInRegister<typename Port::Input, bit> InputBit;
   typedef PwmChannel Pwm;
 
-  // Mode change.
   static inline void set_mode(uint8_t mode) {
     if (mode == DIGITAL_INPUT) {
       ModeBit::clear();
-    } else if (mode == DIGITAL_OUTPUT || mode == ANALOG_OUTPUT) {
+    } else if (mode == DIGITAL_OUTPUT || mode == PWM_OUTPUT) {
       ModeBit::set();
     }
-    if (mode == ANALOG_OUTPUT) {
+    if (mode == PWM_OUTPUT) {
       PwmChannel::Start();
     } else {
       PwmChannel::Stop();
     }
   }
 
-  // Digital Write.
   static inline void High() {
-    if (safe) {
-      set_mode(DIGITAL_OUTPUT);
-    }
     OutputBit::set();
   }
   static inline void Low() {
-    if (safe) {
-      set_mode(DIGITAL_OUTPUT);
-    }
     OutputBit::clear();
   }
   static inline void Toggle() {
@@ -128,37 +120,39 @@ struct GpioImpl {
       High();
     }
   }
-  static inline void set_analog_value(uint8_t value) {
-    if (safe) {
-      set_mode(ANALOG_OUTPUT);
-    }
-    if (PwmChannel::analog) {
+  
+  static inline void set_pwm_value(uint8_t value) {
+    if (PwmChannel::has_pwm) {
       PwmChannel::Write(value);
     } else {
       set_value(value);
     }
   }
 
-  // Digital read.
   static inline uint8_t value() {
-    if (safe) {
-      set_mode(DIGITAL_INPUT);
-    }
     return InputBit::value();
+  }
+  static inline uint8_t is_high() {
+    return InputBit::value();
+  }
+  static inline uint8_t is_low() {
+    return ~InputBit::value();
   }
 };
 
 
 template<typename port, uint8_t bit>
 struct Gpio {
-  typedef GpioImpl<port, NoPwmChannel, bit, false> Impl;
+  typedef GpioImpl<port, NoPwmChannel, bit> Impl;
   static void High() { Impl::High(); }
   static void Low() { Impl::Low(); }
   static void Toggle() { Impl::Toggle(); }
   static void set_mode(uint8_t mode) { Impl::set_mode(mode); }
   static void set_value(uint8_t value) { Impl::set_value(value); }
-  static void set_analog_value(uint8_t value) { Impl::set_analog_value(value); }
+  static void set_pwm_value(uint8_t value) { Impl::set_pwm_value(value); }
   static uint8_t value() { return Impl::value(); }
+  static uint8_t is_low() { return Impl::is_low(); }
+  static uint8_t is_high() { return Impl::is_high(); }
 };
 
 struct DummyGpio {
@@ -166,8 +160,10 @@ struct DummyGpio {
   static void Low() { }
   static void set_mode(uint8_t mode) { }
   static void set_value(uint8_t value) { }
-  static void set_analog_value(uint8_t value) { }
-  static uint8_t value() { }
+  static void set_pwm_value(uint8_t value) { }
+  static uint8_t value() { return 0; }
+  static uint8_t is_low() { return 0; }
+  static uint8_t is_high() { return 0; }
 };
 
 template<typename Gpio>
@@ -176,8 +172,10 @@ struct Inverter {
   static void Low() { Gpio::High(); }
   static void set_mode(uint8_t mode) { Gpio::set_mode(mode); }
   static void set_value(uint8_t value) { Gpio::set_value(!value); }
-  static void set_analog_value(uint8_t value) { Gpio::set_analog_value(~value); }
+  static void set_pwm_value(uint8_t value) { Gpio::set_pwm_value(~value); }
   static uint8_t value() { return !Gpio::value(); }
+  static uint8_t is_low() { return !Gpio::is_low(); }
+  static uint8_t is_high() { return !Gpio::is_high(); }
 };
 
 template<typename gpio>
@@ -202,13 +200,13 @@ struct DigitalInput {
 
 // A template that will be specialized for each pin, allowing the pin number to
 // be specified as a template parameter.
-template<int n, bool safe>
+template<int n>
 struct NumberedGpioInternal { };
 
 // Macro to make the pin definitions (template specializations) easier to read.
 #define SetupGpio(n, port, timer, bit) \
-template<bool safe> struct NumberedGpioInternal<n, safe> { \
-  typedef GpioImpl<port, timer, bit, safe> Impl; };
+template<> struct NumberedGpioInternal<n> { \
+  typedef GpioImpl<port, timer, bit> Impl; };
 
 // Pin definitions for ATmega lineup
 
@@ -308,14 +306,14 @@ typedef Gpio<PortD, 2> UartSpi1RX;
 // Two specializations of the numbered pin template, one which clears the timer
 // for each access to the PWM pins, as does the original Arduino wire lib,
 // the other that does not (use with care!).
-template<int n, bool safe = false>
+template<int n>
 struct NumberedGpio {
-  typedef typename NumberedGpioInternal<n, safe>::Impl Impl;
+  typedef typename NumberedGpioInternal<n>::Impl Impl;
   static void High() { Impl::High(); }
   static void Low() { Impl::Low(); }
   static void set_mode(uint8_t mode) { Impl::set_mode(mode); }
   static void set_value(uint8_t value) { Impl::set_value(value); }
-  static void set_analog_value(uint8_t value) { Impl::set_analog_value(value); }
+  static void set_pwm_value(uint8_t value) { Impl::set_pwm_value(value); }
   static uint8_t value() { return Impl::value(); }
 };
 
@@ -326,10 +324,10 @@ struct PwmOutput {
     data_size = 8,
   };
   static void Init() {
-    NumberedGpio<n>::set_mode(ANALOG_OUTPUT);
+    NumberedGpio<n>::set_mode(PWM_OUTPUT);
   }
   static void Write(uint8_t value) {
-    return NumberedGpio<n>::set_analog_value(value);
+    return NumberedGpio<n>::set_pwm_value(value);
   }
   static void Stop() {
     NumberedGpio<n>::Impl::Pwm::Stop();

@@ -156,7 +156,7 @@ template<typename Timer, uint8_t enabled_flag, typename PwmRegister>
 struct PwmChannel {
   typedef BitInRegister<typename Timer::Impl::A, enabled_flag> EnabledBit;
   enum {
-    analog = 1
+    has_pwm = 1
   };
   static inline void Start() {
     EnabledBit::set();
@@ -171,7 +171,7 @@ struct PwmChannel {
 
 struct NoPwmChannel {
   enum {
-    analog = 0
+    has_pwm = 0
   };
   static inline void Start() { }
   static inline void Stop() { }
