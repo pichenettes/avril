@@ -79,7 +79,7 @@ class WiiNunchuk {
   
   static inline uint8_t acc_x() { return data_[2]; }
   static inline uint8_t acc_y() { return data_[3]; }
-   static inline uint8_t acc_z() { return data_[4]; }
+  static inline uint8_t acc_z() { return data_[4]; }
   
   static inline uint16_t acc_x_16() { 
     return (static_cast<uint16_t>(data_[2]) << 2) | ((data_[5] & 0x0c) >> 2);
