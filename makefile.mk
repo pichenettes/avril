@@ -176,9 +176,20 @@ $(BUILD_DIR)%.mid: $(BUILD_DIR)%.hex
 $(BUILD_DIR)%.syx: $(BUILD_DIR)%.hex
 	$(HEX2SYSEX) $(SYSEX_FLAGS) --syx -o $@ $<
 
+$(BUILD_DIR)%_old_bootloader.mid: $(BUILD_DIR)%.hex
+	$(HEX2SYSEX) $(SYSEX_FLAGS) --obsolete_manufacturer_id -o $@ $<
+
+$(BUILD_DIR)%_old_bootloader.syx: $(BUILD_DIR)%.hex
+	$(HEX2SYSEX) $(SYSEX_FLAGS) --obsolete_manufacturer_id --syx -o $@ $<
+
+
 midi: $(BUILD_DIR)$(TARGET).mid
 
 syx: $(BUILD_DIR)$(TARGET).syx
+
+old_midi: $(BUILD_DIR)$(TARGET)_old_bootloader.mid
+
+old_syx: $(BUILD_DIR)$(TARGET)_old_bootloader.syx
 
 # ------------------------------------------------------------------------------
 # Resources
@@ -197,10 +208,14 @@ REMOTE_HOST = mutable-instruments.net
 REMOTE_USER = shruti
 REMOTE_PATH = public_html/static/firmware
 
-publish: $(BUILD_DIR)$(TARGET).mid $(BUILD_DIR)$(TARGET).hex
+publish: syx midi
 	scp $(BUILD_DIR)$(TARGET).mid $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)/$(TARGET)_$(VERSION).mid
 		scp $(BUILD_DIR)$(TARGET).hex $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)//$(TARGET)_$(VERSION).hex
 		scp $(BUILD_DIR)$(TARGET).syx $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)//$(TARGET)_$(VERSION).syx
+
+publish_old: old_midi old_syx
+	scp $(BUILD_DIR)$(TARGET)_old_bootloader.mid $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)/$(TARGET)_$(VERSION)_old_bootloader.mid
+		scp $(BUILD_DIR)$(TARGET)_old_bootloader.syx $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)//$(TARGET)_$(VERSION)_old_bootloader.syx
 
 # ------------------------------------------------------------------------------
 # Set fuses
