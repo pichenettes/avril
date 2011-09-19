@@ -53,6 +53,7 @@ enum I2cError {
   I2C_ERROR_NO_ACK_FOR_DATA = TW_MT_SLA_NACK,
   I2C_ERROR_ARBITRATION_LOST = TW_MT_DATA_NACK,
   I2C_ERROR_BUS_ERROR = 0xfe,
+  I2C_ERROR_TIMEOUT = 0x02,
 };
 
 template<uint8_t output_buffer_size = 4>
@@ -112,6 +113,16 @@ class I2cMaster {
 
   static uint8_t Wait() {
     while (state_ != I2C_STATE_READY) { }
+    return error_;
+  }
+  
+  static uint8_t Wait(uint16_t num_cycles) {
+    while (state_ != I2C_STATE_READY && num_cycles) {
+      --num_cycles;
+    }
+    if (!num_cycles) {
+      error_ = I2C_ERROR_TIMEOUT;
+    }
     return error_;
   }
 

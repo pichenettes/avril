@@ -26,6 +26,7 @@ namespace avrlib {
 
 const uint8_t kNunchukAddress = 0x52;
 const uint8_t kNunchukPacketSize = 6;
+const uint16_t kNunchukTimeout = 65535;
 
 class WiiNunchuk {
  public:
@@ -42,13 +43,13 @@ class WiiNunchuk {
     bus_.Write(0xf0);
     bus_.Write(0x55);
     bus_.Send(kNunchukAddress);
-    if (bus_.Wait() != I2C_ERROR_NONE) {
+    if (bus_.Wait(kNunchukTimeout) != I2C_ERROR_NONE) {
       return 0;
     }
     bus_.Write(0xfb);
     bus_.Write(0x00);
     bus_.Send(kNunchukAddress);
-    if (bus_.Wait() != I2C_ERROR_NONE) {
+    if (bus_.Wait(kNunchukTimeout) != I2C_ERROR_NONE) {
       return 0;
     }
     return 1;
@@ -60,10 +61,10 @@ class WiiNunchuk {
     bus_.FlushOutputBuffer();
     bus_.Write(0x00);
     bus_.Send(kNunchukAddress);
-    if (bus_.Wait() == I2C_ERROR_NONE) {
+    if (bus_.Wait(kNunchukTimeout) == I2C_ERROR_NONE) {
       if (bus_.Request(kNunchukAddress, kNunchukPacketSize) == \
           kNunchukPacketSize) {
-        if (bus_.Wait() == I2C_ERROR_NONE) {
+        if (bus_.Wait(kNunchukTimeout) == I2C_ERROR_NONE) {
           for (uint8_t i = 0; i < kNunchukPacketSize; ++i) {
             data_[i] = bus_.ImmediateRead();
           }
@@ -93,6 +94,14 @@ class WiiNunchuk {
   
   static inline uint8_t z_pressed() { return !(data_[5] & 0x01); }
   static inline uint8_t c_pressed() { return !(data_[5] & 0x02); }
+  static inline uint8_t alive() {
+    for (uint8_t i = 0; i < 6; ++i) {
+      if (data_[i] != 0xff) {
+        return 1;
+      }
+    }
+    return 0;
+  }
 
  private:
   static uint8_t data_[6];
