@@ -192,6 +192,30 @@ old_midi: $(BUILD_DIR)$(TARGET)_old_bootloader.mid
 old_syx: $(BUILD_DIR)$(TARGET)_old_bootloader.syx
 
 # ------------------------------------------------------------------------------
+# EEPROM image write
+# ------------------------------------------------------------------------------
+
+GOLDEN_EEPROM_FILE = $(TARGET)/data/$(TARGET)_eeprom_golden.hex
+GOLDEN_FLASH_FILE = $(TARGET)/data/$(TARGET)_flash_golden.hex
+
+eeprom_backup:
+	$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
+		-U eeprom:r:$(GOLDEN_EEPROM_FILE):i
+
+eeprom_restore:
+	$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
+		-U eeprom:w:$(GOLDEN_EEPROM_FILE):i -U lock:w:0x$(LOCK):m
+
+flash_backup:
+	$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
+		-U flash:r:$(GOLDEN_FLASH_FILE):i
+
+flash_restore:
+	$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
+		-U flash:w:$(GOLDEN_FLASH_FILE):i -U lock:w:0x$(LOCK):m
+
+
+# ------------------------------------------------------------------------------
 # Resources
 # ------------------------------------------------------------------------------
 
