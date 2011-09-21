@@ -56,7 +56,6 @@ CPPFLAGS      = -mmcu=$(MCU) -I. \
 			-DF_CPU=$(F_CPU) \
 			-fdata-sections \
 			-ffunction-sections \
-			-fno-move-loop-invariants \
 			-fshort-enums \
 			$(EXTRA_DEFINES) \
 			$(MMC_CONFIG) \
