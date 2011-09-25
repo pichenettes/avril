@@ -19,22 +19,8 @@
 
 /* Port Controls  (Platform dependent) */
 
-// __        ___    ____  _   _ ___ _   _  ____
-// \ \      / / \  |  _ \| \ | |_ _| \ | |/ ___|
-//  \ \ /\ / / _ \ | |_) |  \| || ||  \| | |  _
-//   \ V  V / ___ \|  _ <| |\  || || |\  | |_| |
-//    \_/\_/_/   \_\_| \_\_| \_|___|_| \_|\____|
-//
-// This is utterly stupid. This will be removed when a correct version of the
-// board -- with the 74hc138 correctly wired -- will be available.
-
-#ifdef MMC_CS_SWAP
-  #define CS_HIGH()  MMC_CS_PORT &= ~(1 << MMC_CS_BIT)   /* MMC CS = H */
-  #define CS_LOW() MMC_CS_PORT |= (1 << MMC_CS_BIT)      /* MMC CS = L */
-#else
-  #define CS_LOW()  MMC_CS_PORT &= ~(1 << MMC_CS_BIT)     /* MMC CS = L */
-  #define CS_HIGH() MMC_CS_PORT |= (1 << MMC_CS_BIT)      /* MMC CS = H */
-#endif  // MMC_CS_SWAP
+#define CS_LOW()  MMC_CS_PORT &= ~(1 << MMC_CS_BIT)     /* MMC CS = L */
+#define CS_HIGH() MMC_CS_PORT |= (1 << MMC_CS_BIT)      /* MMC CS = H */
 
 #define SOCKWP    0   /* Write protected. yes:true, no:false, default:false */
 #define SOCKINS   1  /* Card detected.   yes:true, no:false, default:true */
