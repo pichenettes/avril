@@ -136,7 +136,7 @@ struct GpioImpl {
     return InputBit::value();
   }
   static inline uint8_t is_low() {
-    return ~InputBit::value();
+    return InputBit::value() == 0;
   }
 };
 
