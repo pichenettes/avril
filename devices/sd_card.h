@@ -227,6 +227,7 @@ class SdCard {
   
   static SdStatus Init() {
     Spi::Init();
+    SpiMISO::High();  // Enable pull-up on MISO line.
     type_ = 0;
     
     Spi::End();
@@ -375,28 +376,6 @@ class SdCard {
     return SD_OK;
   }
   
-  /*static uint8_t WriteData(uint8_t token, const uint8_t* data) {
-    if (!WaitNotBusy<Config::busy_timeout>()) {
-      return SD_ERROR_WRITE_TIMEOUT;
-    }
-    Spi::Send(token);
-    if (token != SD_TOKEN_STOP_TRAN) {
-      uint8_t word_count = 0;
-      do {
-        Spi::Send(*data++);
-        Spi::Send(*data++);
-      } while (--word_count);
-      // Dummy CRC.
-      Spi::Send(0xff);
-      Spi::Send(0xff);
-      uint8_t response = Spi::Receive();
-      if ((response & 0x1f) != SD_TOKEN_DATA_RES_ACCEPTED) {
-        return SD_ERROR_WRITE;
-      }
-    }
-    return SD_OK;
-  }*/
-
   static void Swallow(uint8_t n) {
     for (uint8_t i = 0; i < n; ++i) {
       Spi::Receive();
