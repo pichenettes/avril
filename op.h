@@ -350,6 +350,18 @@ static inline int16_t S8U8Mul(int8_t a, uint8_t b) {
   return result;
 }
 
+static inline int16_t S8S8Mul(int8_t a, int8_t b) {
+  int16_t result;
+  asm(
+    "muls %1, %2"    "\n\t"
+    "movw %0, r0"      "\n\t"
+    "eor r1, r1"      "\n\t"
+    : "=r" (result)
+    : "a" (a), "a" (b)
+  );
+  return result;
+}
+
 static inline uint16_t U8U8Mul(uint8_t a, uint8_t b) {
   uint16_t result;
   asm(
@@ -603,6 +615,10 @@ static inline int8_t S8U8MulShift8(int8_t a, uint8_t b) {
 }
 
 static inline int16_t S8U8Mul(int8_t a, uint8_t b) {
+  return a * b;
+}
+
+static inline int16_t S8S8Mul(int8_t a, int8_t b) {
   return a * b;
 }
 
