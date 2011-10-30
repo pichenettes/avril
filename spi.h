@@ -81,6 +81,10 @@ class SpiMaster {
     SPCR = configuration;
   }
   
+  static inline void PullUpMISO() {
+    SpiMISO::High();
+  }
+  
   static inline void Begin() {
     SlaveSelect::Low();
   }

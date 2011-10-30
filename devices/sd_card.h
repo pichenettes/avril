@@ -227,7 +227,7 @@ class SdCard {
   
   static SdStatus Init() {
     Spi::Init();
-    SpiMISO::High();  // Enable pull-up on MISO line.
+    Spi::PullUpMISO();  // Enable pull-up on MISO line.
     type_ = 0;
     
     Spi::End();
