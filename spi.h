@@ -145,8 +145,7 @@ class SpiMaster {
   }
 };
 
-template<typename SlaveSelect,
-         DataOrder order = MSB_FIRST,
+template<DataOrder order = MSB_FIRST,
          bool enable_interrupt = false>
 class SpiSlave {
  public:
@@ -160,7 +159,6 @@ class SpiSlave {
     SpiMOSI::set_mode(DIGITAL_INPUT);
     SpiMISO::set_mode(DIGITAL_OUTPUT);
     SpiSS::set_mode(DIGITAL_INPUT);  // Ohhh mistress, ohhhh!
-    SlaveSelect::set_mode(DIGITAL_INPUT);
 
     // SPI enabled, configured as master.
     uint8_t configuration = _BV(SPE);
