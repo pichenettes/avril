@@ -97,6 +97,24 @@ static inline uint24_t U24Add(uint24_t a, uint24_t b) {
   return result;
 }
 
+static inline uint24_t U24Sub(uint24_t a, uint24_t b) {
+  uint16_t a_int = a.integral;
+  uint16_t b_int = b.integral;
+  uint8_t a_frac = a.fractional;
+  uint8_t b_frac = b.fractional;
+  uint24_t result;
+  asm(
+    "sub %0, %4"      "\n\t"
+    "sbc %A1, %A5"    "\n\t"
+    "sbc %B1, %B5"    "\n\t"
+    : "=r" (a_frac), "=r" (a_int)
+    : "0" (a_frac), "1" (a_int), "a" (b_frac), "a" (b_int)
+  );
+  result.integral = a_int;
+  result.fractional = a_frac;
+  return result;
+}
+
 static inline uint24_t U24ShiftRight(uint24_t a) {
   uint16_t a_int = a.integral;
   uint8_t a_frac = a.fractional;
@@ -458,6 +476,22 @@ static inline int16_t S16U8MulShift8(int16_t a, uint8_t b) {
   return result;
 }
 
+static inline uint16_t U16U8MulShift8(uint16_t a, uint8_t b) {
+  uint16_t result;
+  asm(
+    "eor %B0, %B0"    "\n\t"
+    "mul %A1, %A2"    "\n\t"
+    "mov %A0, r1"     "\n\t"
+    "mul %B1, %A2"  "\n\t"
+    "add %A0, r0"     "\n\t"
+    "adc %B0, r1"     "\n\t"
+    "eor r1, r1"      "\n\t"
+    : "=&r" (result)
+    : "a" (a), "a" (b)
+  );
+  return result;
+}
+
 static inline int16_t S16S8MulShift8(int16_t a, int8_t b) {
   int16_t result;
   asm(
@@ -535,6 +569,21 @@ static inline uint24_t U24Add(uint24_t a, uint24_t b) {
   bv += b.fractional;
   
   uint32_t sum = av + bv;
+  result.integral = sum >> 8;
+  result.fractional = sum & 0xff;
+  return result;
+}
+
+static inline uint24_t U24Sub(uint24_t a, uint24_t b) {
+  uint24_t result;
+  
+  uint32_t av = static_cast<uint32_t>(a.integral) << 8;
+  av += a.fractional;
+  
+  uint32_t bv = static_cast<uint32_t>(b.integral) << 8;
+  bv += b.fractional;
+  
+  uint32_t difference = av - bv;
   result.integral = sum >> 8;
   result.fractional = sum & 0xff;
   return result;
@@ -652,6 +701,10 @@ static inline int16_t S16U16MulShift16(int16_t a, uint16_t b) {
 
 static inline int16_t S16U8MulShift8(int16_t a, uint8_t b) {
   return (static_cast<int32_t>(a) * static_cast<uint32_t>(b)) >> 8;
+}
+
+static inline int16_t U16U8MulShift8(uint16_t a, uint8_t b) {
+  return (static_cast<uint32_t>(a) * static_cast<uint32_t>(b)) >> 8;
 }
 
 static inline uint8_t InterpolateSample(
