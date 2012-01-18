@@ -104,14 +104,16 @@ class LedArray {
   }
   
   static inline void ShiftOutPixels() {
-    uint8_t byte = refresh_cycle_ & 1;
+    uint8_t threshold = refresh_cycle_ & 0x0f;
+    uint8_t color = refresh_cycle_ & 0x20 ? 1 : 0;
+    
+    uint8_t byte = color;
     uint8_t num_bits = 1;
-    uint8_t threshold = refresh_cycle_ >> 1;
     
     for (uint8_t i = (num_regs * 8) - 2; i != 0xff ; --i) {
       byte <<= 1;
       uint8_t intensity;
-      if (refresh_cycle_ & 1) {
+      if (color) {
         intensity = U8ShiftRight4(~pixels_[i]);
       } else {
         intensity = pixels_[i] & 0x0f;
@@ -126,7 +128,7 @@ class LedArray {
         byte = 0;
       }
     }
-    refresh_cycle_ = (refresh_cycle_ + 1) & 0x1f;
+    ++refresh_cycle_;
   }
   
   static inline void Write() {
@@ -159,3 +161,4 @@ uint8_t LedArray<Latch, Clock, Data, num_regs>::refresh_cycle_;
 }  // namespace avrlib
 
 #endif   // AVRLIB_DEVICES_BICOLOR_LED_ARRAY_H_
+
