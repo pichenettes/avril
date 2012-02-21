@@ -249,7 +249,7 @@ terminal:
 		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -tuF
 
 fuses:
-		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -u \
+		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -B 10 -e -u \
 			-U efuse:w:0x$(EFUSE):m \
 			-U hfuse:w:0x$(HFUSE):m \
 			-U lfuse:w:0x$(LFUSE):m \
