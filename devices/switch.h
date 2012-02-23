@@ -22,6 +22,8 @@
 #ifndef AVRLIB_DEVICES_SWITCHES_H_
 #define AVRLIB_DEVICES_SWITCHES_H_
 
+#include <string.h>
+
 #include "avrlib/devices/shift_register.h"
 #include "avrlib/size_to_type.h"
 
