@@ -46,6 +46,11 @@ class Random {
     Update();
     return state_msb();
   }
+  
+  static inline uint16_t GetWord() {
+    Update();
+    return state();
+  }
 
  private:
   static uint16_t rng_state_;
