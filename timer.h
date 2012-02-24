@@ -40,7 +40,7 @@ SpecialFunctionRegister(TIMSK0);
 SpecialFunctionRegister(TIMSK1);
 SpecialFunctionRegister(TIMSK2);
 SpecialFunctionRegister(TCNT0);
-SpecialFunctionRegister(TCNT1);
+SpecialFunctionRegister16(TCNT1);
 SpecialFunctionRegister(TCNT2);
 SpecialFunctionRegister(OCR0A);
 SpecialFunctionRegister(OCR0B);
@@ -87,17 +87,21 @@ struct TimerImpl {
     // Sets the mode registers.
     *StatusRegisterA::ptr() = (*StatusRegisterA::ptr() & 0xfc) | mode;
   }
+  
+  static inline void set_value(uint16_t value) {
+    *ValueRegister::ptr() = value;
+  }
 
   // These are the values for MCUs clocked at 20 MHz
   // 
   // Timer speed
   // value | fast        | accurate
   // --------------------------------------
-  // 1     | 78.125 kHz  | 39.062 kHz
-  // 2     | 9.765 kHz   | 4.882 kHz
-  // 3     | 1220.7 Hz   | 610.3 Hz
-  // 4     | 305.2 Hz    | 152.6 Hz
-  // 5     | 76.3 Hz     | 38.1 Hz
+  // 1     | 78.125 kHz  | 39.215 kHz
+  // 2     | 9.765 kHz   | 4.901 kHz
+  // 3     | 1220.7 Hz   | 612.7 Hz
+  // 4     | 305.2 Hz    | 153.2 Hz
+  // 5     | 76.3 Hz     | 38.3 Hz
   static inline void set_prescaler(uint8_t prescaler) {
     *StatusRegisterB::ptr() = (*StatusRegisterB::ptr() & 0xf8) | prescaler;
   }
