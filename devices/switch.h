@@ -79,7 +79,11 @@ class DebouncedSwitches {
     Register::Init();
     memset(state_, 0xff, sizeof(state_));
   }
-
+  
+  static inline T DummyRead() {
+    return Register::Read();
+  }
+  
   static inline void Read() {
     T value = Register::Read();
     T mask = 1 << (num_inputs - 1);
