@@ -703,7 +703,7 @@ static inline int16_t S16U8MulShift8(int16_t a, uint8_t b) {
   return (static_cast<int32_t>(a) * static_cast<uint32_t>(b)) >> 8;
 }
 
-static inline int16_t U16U8MulShift8(uint16_t a, uint8_t b) {
+static inline uint16_t U16U8MulShift8(uint16_t a, uint8_t b) {
   return (static_cast<uint32_t>(a) * static_cast<uint32_t>(b)) >> 8;
 }
 

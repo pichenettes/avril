@@ -22,6 +22,8 @@
 #ifndef AVRLIB_DEVICES_SWITCHES_H_
 #define AVRLIB_DEVICES_SWITCHES_H_
 
+#include <string.h>
+
 #include "avrlib/devices/shift_register.h"
 #include "avrlib/size_to_type.h"
 
@@ -77,7 +79,11 @@ class DebouncedSwitches {
     Register::Init();
     memset(state_, 0xff, sizeof(state_));
   }
-
+  
+  static inline T DummyRead() {
+    return Register::Read();
+  }
+  
   static inline void Read() {
     T value = Register::Read();
     T mask = 1 << (num_inputs - 1);

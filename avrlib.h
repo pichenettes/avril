@@ -60,6 +60,13 @@ enum DigitalValue {
   uint8_t operator()(const uint8_t& value) { return *ptr(); } \
 };
 
+#define SpecialFunctionRegister16(reg) struct reg##Register { \
+  static volatile uint16_t* ptr() { return &_SFR_WORD(reg); } \
+  reg##Register& operator=(const uint16_t& value) { *ptr() = value; } \
+  uint16_t operator()(const uint16_t& value) { return *ptr(); } \
+};
+
+
 // Represents a bit in an i/o port register.
 template<typename Register, uint8_t bit>
 struct BitInRegister {
