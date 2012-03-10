@@ -249,7 +249,7 @@ terminal:
 		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -tuF
 
 fuses:
-		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -u \
+		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -B 10 -e -u \
 			-U efuse:w:0x$(EFUSE):m \
 			-U hfuse:w:0x$(HFUSE):m \
 			-U lfuse:w:0x$(LFUSE):m \
@@ -262,12 +262,10 @@ fuses:
 bootstrap: bake
 
 bake:	$(FIRMWARE)
-		echo "sck 10\nquit\n" | $(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -tuF
-		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -u \
+		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -B 10 -e -u \
 			-U efuse:w:0x$(EFUSE):m \
 			-U hfuse:w:0x$(HFUSE):m \
 			-U lfuse:w:0x$(LFUSE):m \
 			-U lock:w:0x$(LOCK):m
-		echo "sck 1\nquit\n" | $(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -e -tuF
-		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
+		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) -B 1 \
 			-U flash:w:$(TARGET_HEX):i -U lock:w:0x$(LOCK):m
