@@ -129,7 +129,7 @@ $(BUILD_DIR):
 		mkdir -p $(BUILD_DIR)
 
 $(TARGET_ELF):  $(OBJS)
-		$(CC) $(LDFLAGS) -o $@ $(OBJS) $(SYS_OBJS)
+		$(CC) $(LDFLAGS) -o $@ $(OBJS) $(SYS_OBJS) -lc
 
 $(DEP_FILE):  $(BUILD_DIR) $(DEPS)
 		cat $(DEPS) > $(DEP_FILE)

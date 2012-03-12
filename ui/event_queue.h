@@ -23,6 +23,7 @@
 #include "avrlib/base.h"
 #include "avrlib/op.h"
 #include "avrlib/ring_buffer.h"
+#include "avrlib/time.h"
 
 namespace avrlib {
 

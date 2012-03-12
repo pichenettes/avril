@@ -65,27 +65,34 @@ enum TimerMode {
   TIMER_FAST_PWM = 3,
 };
 
-template<typename StatusRegisterA,
-         typename StatusRegisterB,
-         typename ModeRegister,
+template<typename ControlRegisterA,
+         typename ControlRegisterB,
+         typename InterruptRegister,
          typename ValueRegister>
 struct TimerImpl {
-  typedef StatusRegisterA A;
-  typedef StatusRegisterB B;
+  typedef ControlRegisterA A;
+  typedef ControlRegisterB B;
 
   static inline uint8_t value() {
     return *ValueRegister::ptr();
   }
 
   static inline void Start() {
-    *ModeRegister::ptr() |= 1;
+    *InterruptRegister::ptr() |= 1;
   }
   static inline void Stop() {
-    *ModeRegister::ptr() &= ~1;
+    *InterruptRegister::ptr() &= ~1;
   }
+  static inline void StartInputCapture() {
+    *InterruptRegister::ptr() |= _BV(5);
+  }
+  static inline void StopInputCapture() {
+    *InterruptRegister::ptr() &= ~(_BV(5));
+  }
+  
   static inline void set_mode(TimerMode mode) {
     // Sets the mode registers.
-    *StatusRegisterA::ptr() = (*StatusRegisterA::ptr() & 0xfc) | mode;
+    *ControlRegisterA::ptr() = (*ControlRegisterA::ptr() & 0xfc) | mode;
   }
   
   static inline void set_value(uint16_t value) {
@@ -103,7 +110,7 @@ struct TimerImpl {
   // 4     | 305.2 Hz    | 153.2 Hz
   // 5     | 76.3 Hz     | 38.3 Hz
   static inline void set_prescaler(uint8_t prescaler) {
-    *StatusRegisterB::ptr() = (*StatusRegisterB::ptr() & 0xf8) | prescaler;
+    *ControlRegisterB::ptr() = (*ControlRegisterB::ptr() & 0xf8) | prescaler;
   }
 };
 
@@ -150,6 +157,8 @@ struct Timer {
   static inline uint8_t value() { return Impl::value(); }
   static inline void Start() { Impl::Start(); }
   static inline void Stop() { Impl::Stop(); }
+  static inline void StartInputCapture() { Impl::StartInputCapture(); }
+  static inline void StopInputCapture() { Impl::StopInputCapture(); }
   static inline void set_mode(TimerMode mode) { Impl::set_mode(mode); }
   static inline void set_prescaler(uint8_t prescaler) {
     Impl::set_prescaler(prescaler);
