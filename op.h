@@ -58,7 +58,7 @@ static inline uint8_t S16ShiftRight8(int16_t value) {
 
 #ifdef USE_OPTIMIZED_OP
 
-static inline uint24c_t U24AddC(uint24_t a, uint24_t b) {
+static inline uint24c_t U24AddC(uint24c_t a, uint24_t b) {
   uint16_t a_int = a.integral;
   uint16_t b_int = b.integral;
   uint8_t a_frac = a.fractional;
@@ -543,7 +543,7 @@ static inline uint8_t InterpolateSample(
 
 #else
 
-static inline uint24c_t U24AddC(uint24_t a, uint24_t b) {
+static inline uint24c_t U24AddC(uint24c_t a, uint24_t b) {
   uint24c_t result;
   
   uint32_t av = static_cast<uint32_t>(a.integral) << 8;
