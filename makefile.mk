@@ -238,8 +238,9 @@ publish: syx midi
 		scp $(BUILD_DIR)$(TARGET).syx $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)//$(TARGET)_$(VERSION).syx
 
 publish_old: old_midi old_syx
-	scp $(BUILD_DIR)$(TARGET)_old_bootloader.mid $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)/$(TARGET)_$(VERSION)_old_bootloader.mid
-		scp $(BUILD_DIR)$(TARGET)_old_bootloader.syx $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)//$(TARGET)_$(VERSION)_old_bootloader.syx
+	scp $(BUILD_DIR)$(TARGET)_old_bootloader.mid $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)/$(TARGET)_$(VERSION).mid
+		scp $(BUILD_DIR)$(TARGET).hex $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)//$(TARGET)_$(VERSION).hex
+		scp $(BUILD_DIR)$(TARGET)_old_bootloader.syx $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_PATH)//$(TARGET)_$(VERSION).syx
 
 # ------------------------------------------------------------------------------
 # Set fuses
