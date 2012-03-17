@@ -95,6 +95,15 @@ struct TimerImpl {
     *ControlRegisterA::ptr() = (*ControlRegisterA::ptr() & 0xfc) | mode;
   }
   
+  static inline void set_mode(
+      uint8_t wg_mode_1,
+      uint8_t wg_mode_2,
+      uint8_t prescaler) {
+    // Sets the mode registers.
+    *ControlRegisterA::ptr() = wg_mode_1;
+    *ControlRegisterB::ptr() = wg_mode_2 | prescaler;
+  }
+  
   static inline void set_value(uint16_t value) {
     *ValueRegister::ptr() = value;
   }
@@ -160,6 +169,9 @@ struct Timer {
   static inline void StartInputCapture() { Impl::StartInputCapture(); }
   static inline void StopInputCapture() { Impl::StopInputCapture(); }
   static inline void set_mode(TimerMode mode) { Impl::set_mode(mode); }
+  static inline void set_mode(uint8_t a, uint8_t b, uint8_t c) {
+    Impl::set_mode(a, b, c);
+  }
   static inline void set_prescaler(uint8_t prescaler) {
     Impl::set_prescaler(prescaler);
   }
@@ -179,6 +191,9 @@ struct PwmChannel {
   }
   static inline void Write(uint8_t value) {
     *PwmRegister::ptr() = value;
+  }
+  static inline void set_frequency(uint16_t f) {
+    OCR1A = f;
   }
 };
 
