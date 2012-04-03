@@ -229,7 +229,7 @@ resources:	$(wildcard $(RESOURCES)/*.py)
 # ------------------------------------------------------------------------------
 
 REMOTE_HOST = mutable-instruments.net
-REMOTE_USER = shruti
+REMOTE_USER = mutable
 REMOTE_PATH = public_html/static/firmware
 
 publish: syx midi
