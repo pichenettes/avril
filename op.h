@@ -460,6 +460,30 @@ static inline int16_t S16U16MulShift16(int16_t a, uint16_t b) {
   return result;
 }
 
+static inline uint16_t U16U16MulShift16(uint16_t a, uint16_t b) {
+  uint16_t result;
+  uint16_t tmp;
+  asm(
+    "eor %A1, %A1"    "\n\t"
+    "mul %A2, %A3"    "\n\t"
+    "mov %B1, r1"     "\n\t"
+    "mul %B2, %B3"    "\n\t"
+    "movw %A0, r0"    "\n\t"
+    "mul %B3, %A2"    "\n\t"
+    "add %B1, r0"     "\n\t"
+    "adc %A0, r1"     "\n\t"
+    "adc %B0, %A1"    "\n\t"
+    "mul %B2, %A3"    "\n\t"
+    "add %B1, r0"     "\n\t"
+    "adc %A0, r1"     "\n\t"
+    "adc %B0, %A1"    "\n\t"
+    "eor r1, r1"      "\n\t"
+    : "=&r" (result), "=&r" (tmp)
+    : "a" (a), "a" (b)
+  );
+  return result;
+}
+
 static inline int16_t S16U8MulShift8(int16_t a, uint8_t b) {
   int16_t result;
   asm(
