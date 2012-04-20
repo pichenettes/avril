@@ -80,12 +80,11 @@ class DebouncedSwitches {
     memset(state_, 0xff, sizeof(state_));
   }
   
-  static inline T DummyRead() {
+  static inline T ReadRegister() {
     return Register::Read();
   }
   
-  static inline void Read() {
-    T value = Register::Read();
+  static inline void Process(T value) {
     T mask = 1 << (num_inputs - 1);
     for (uint8_t i = 0; i < num_inputs; ++i) {
       state_[i] <<= 1;
@@ -94,6 +93,10 @@ class DebouncedSwitches {
       }
       mask >>= 1;
     }
+  }
+  
+  static inline void Read() {
+    Process(ReadRegister());
   }
   
   static inline uint8_t lowered(uint8_t index) { return state_[index] == 0x80; }
