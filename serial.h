@@ -227,6 +227,13 @@ struct Serial {
       SerialPort::RxInterrupt::set();
     }
   }
+  
+  static inline void Disable() {
+    SerialPort::Tx::clear();
+    SerialPort::Rx::clear();
+    SerialPort::RxInterrupt::clear();
+  }
+  
   static inline void Write(Value v) { Impl::IO::Write(v); }
   static inline uint8_t writable() { return Impl::IO::writable(); }
   static inline uint8_t NonBlockingWrite(Value v) {
