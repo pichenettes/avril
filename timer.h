@@ -78,16 +78,22 @@ struct TimerImpl {
   }
 
   static inline void Start() {
-    *InterruptRegister::ptr() |= 1;
+    *InterruptRegister::ptr() |= _BV(0);
   }
   static inline void Stop() {
-    *InterruptRegister::ptr() &= ~1;
+    *InterruptRegister::ptr() &= ~(_BV(0));
   }
   static inline void StartInputCapture() {
     *InterruptRegister::ptr() |= _BV(5);
   }
   static inline void StopInputCapture() {
     *InterruptRegister::ptr() &= ~(_BV(5));
+  }
+  static inline void StartCompare() {
+    *InterruptRegister::ptr() |= _BV(1);
+  }
+  static inline void StopCompare() {
+    *InterruptRegister::ptr() &= ~(_BV(1));
   }
   
   static inline void set_mode(TimerMode mode) {
@@ -168,6 +174,8 @@ struct Timer {
   static inline void Stop() { Impl::Stop(); }
   static inline void StartInputCapture() { Impl::StartInputCapture(); }
   static inline void StopInputCapture() { Impl::StopInputCapture(); }
+  static inline void StartCompare() { Impl::StartCompare(); }
+  static inline void StopCompare() { Impl::StopCompare(); }
   static inline void set_mode(TimerMode mode) { Impl::set_mode(mode); }
   static inline void set_mode(uint8_t a, uint8_t b, uint8_t c) {
     Impl::set_mode(a, b, c);
