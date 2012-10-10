@@ -29,14 +29,14 @@
 
 namespace avrlib {
   
-template<typename Input, bool pulled_up = true>
+template<typename Input, bool enable_pull_up = true>
 class DebouncedSwitch {
  public:
   DebouncedSwitch() { }
     
   static inline void Init() {
     Input::set_mode(DIGITAL_INPUT);
-    if (pulled_up) {
+    if (enable_pull_up) {
       Input::High();
     }
     state_ = 0xff;
@@ -62,8 +62,8 @@ class DebouncedSwitch {
 };
 
 /* static */
-template<typename Input, bool pulled_up>
-uint8_t DebouncedSwitch<Input, pulled_up>::state_;
+template<typename Input, bool enable_pull_up>
+uint8_t DebouncedSwitch<Input, enable_pull_up>::state_;
 
 
 template<typename Load, typename Clock, typename Data, uint8_t num_inputs>
