@@ -56,13 +56,13 @@
 namespace avrlib {
 
 template<typename Latch, typename Clock, typename Data, uint8_t num_regs = 1>
-class LedArray {
+class BicolorLedArray {
  public:
   enum {
     size = num_regs * 8 - 1
   };
    
-  LedArray() { }
+  BicolorLedArray() { }
   
   static inline void Init() {
     Register::Init();
@@ -146,17 +146,17 @@ class LedArray {
   static uint8_t pixels_[size];
   static uint8_t refresh_cycle_;
 
-  DISALLOW_COPY_AND_ASSIGN(LedArray);
+  DISALLOW_COPY_AND_ASSIGN(BicolorLedArray);
 };
 
 template<typename Latch, typename Clock, typename Data, uint8_t num_regs>
-uint8_t LedArray<Latch, Clock, Data, num_regs>::pixels_[size];
+uint8_t BicolorLedArray<Latch, Clock, Data, num_regs>::pixels_[size];
 
 template<typename Latch, typename Clock, typename Data, uint8_t num_regs>
-uint8_t LedArray<Latch, Clock, Data, num_regs>::buffered_pixels_[size];
+uint8_t BicolorLedArray<Latch, Clock, Data, num_regs>::buffered_pixels_[size];
 
 template<typename Latch, typename Clock, typename Data, uint8_t num_regs>
-uint8_t LedArray<Latch, Clock, Data, num_regs>::refresh_cycle_;
+uint8_t BicolorLedArray<Latch, Clock, Data, num_regs>::refresh_cycle_;
 
 }  // namespace avrlib
 
