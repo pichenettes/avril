@@ -97,7 +97,7 @@ struct ParallelPort {
     Write(Masks::mask);
   }
 
-  static inline void Read(uint8_t value) {
+  static inline uint8_t Read() {
     return (*Port::Input::ptr() & Masks::mask) >> Masks::shift;
   }
 };

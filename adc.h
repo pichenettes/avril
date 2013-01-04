@@ -123,6 +123,10 @@ class AdcInputScanner {
     return state_[pin];
   }
   
+  static inline uint8_t Read8(uint8_t pin) {
+    return static_cast<uint16_t>(state_[pin]) >> 8;
+  }
+
   static uint8_t current_pin() {
     return current_pin_;
   }
