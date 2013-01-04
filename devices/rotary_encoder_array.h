@@ -38,7 +38,6 @@ template<
     uint8_t size = 8>
 class RotaryEncoderArray {
  public:
-
   RotaryEncoderArray() { }
   ~RotaryEncoderArray() { }
 
