@@ -13,10 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-AVRLIB_TOOLS_PATH = /usr/local/CrossPack-AVR/bin/
-AVRLIB_ETC_PATH   = /usr/local/CrossPack-AVR/etc/
-# AVRLIB_TOOLS_PATH = /Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/
-# AVRLIB_ETC_PATH   = /Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/etc/
+AVRLIB_TOOLS_PATH = /usr/bin/
 BUILD_ROOT     = build/
 BUILD_DIR      = $(BUILD_ROOT)$(TARGET)/
 PROGRAMMER     = avrispmkII
@@ -54,6 +51,7 @@ CAT            = cat
 CPPFLAGS      = -mmcu=$(MCU) -I. \
 			-g -Os -w -Wall \
 			-DF_CPU=$(F_CPU) \
+			-D__PROG_TYPES_COMPAT__ \
 			-fdata-sections \
 			-ffunction-sections \
 			-fshort-enums \
@@ -114,9 +112,7 @@ $(BUILD_DIR)%.sym: $(BUILD_DIR)%.elf
 # AVRDude
 # ------------------------------------------------------------------------------
 
-AVRDUDE_CONF     = $(AVRLIB_ETC_PATH)avrdude.conf
 AVRDUDE_COM_OPTS = -V -p $(DMCU)
-AVRDUDE_COM_OPTS += -C $(AVRDUDE_CONF)
 AVRDUDE_ISP_OPTS = -c $(PROGRAMMER) -P usb
 
 # ------------------------------------------------------------------------------
