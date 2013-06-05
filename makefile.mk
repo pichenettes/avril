@@ -141,7 +141,7 @@ bin:	$(TARGET_BIN)
 
 upload:    $(TARGET_HEX)
 		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
-			-U flash:w:$(TARGET_HEX):i -U lock:w:0x$(LOCK):m
+			-B 1 -U flash:w:$(TARGET_HEX):i -U lock:w:0x$(LOCK):m
 
 clean:
 		$(REMOVE) $(OBJS) $(TARGETS) $(DEP_FILE) $(DEPS)
