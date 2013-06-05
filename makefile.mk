@@ -18,16 +18,23 @@ BUILD_ROOT     = build/
 BUILD_DIR      = $(BUILD_ROOT)$(TARGET)/
 PROGRAMMER     = avrispmkII
 
+ifeq ($(FAMILY),tiny)
+MCU            = attiny$(MCU_NAME)
+DMCU           = t$(MCU_NAME)
+MCU_DEFINE     = ATTINY$(MCU_NAME)
+else
 MCU            = atmega$(MCU_NAME)p
 DMCU           = m$(MCU_NAME)p
 MCU_DEFINE     = ATMEGA$(MCU_NAME)P
+endif
+
 F_CPU          = 20000000
 
 VPATH          = $(PACKAGES)
 CC_FILES       = $(notdir $(wildcard $(patsubst %,%/*.cc,$(PACKAGES))))
 C_FILES        = $(notdir $(wildcard $(patsubst %,%/*.c,$(PACKAGES))))
-AS_FILES       = $(notdir $(wildcard $(patsubst %,%/*.as,$(PACKAGES))))
-OBJ_FILES      = $(CC_FILES:.cc=.o) $(C_FILES:.c=.o) $(AS_FILES:.S=.o)
+AS_FILES       = $(notdir $(wildcard $(patsubst %,%/*.s,$(PACKAGES))))
+OBJ_FILES      = $(CC_FILES:.cc=.o) $(C_FILES:.c=.o) $(AS_FILES:.s=.o)
 OBJS           = $(patsubst %,$(BUILD_DIR)%,$(OBJ_FILES))
 DEPS           = $(OBJS:.o=.d)
 
