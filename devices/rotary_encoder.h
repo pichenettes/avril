@@ -42,6 +42,11 @@ class RotaryEncoder {
   }
 
   static inline int8_t Read() {
+    ReadSwitch();
+    return ReadEncoder();
+  }
+  
+  static inline int8_t ReadEncoder() {
     int8_t increment = 0;
     uint8_t a = SwitchA::Read();
     uint8_t b = SwitchB::Read();
@@ -52,8 +57,11 @@ class RotaryEncoder {
         increment = -1;
       }
     }
-    SwitchClick::Read();
     return increment;
+  }
+  
+  static uint8_t ReadSwitch() {
+    return SwitchClick::Read();
   }
 
   static uint8_t clicked() { return SwitchClick::raised(); }
