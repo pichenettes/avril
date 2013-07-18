@@ -150,7 +150,7 @@ class ResourceTable(object):
     c_type = self.c_type
     name = self.name
     f.write(
-        '\n\n%(modifier)sconst %(c_type)s* %(name)s_table[] = {\n' % locals())
+        '\n\n%(modifier)sconst %(c_type)s* const %(name)s_table[] = {\n' % locals())
     for entry in self.entries:
       f.write('  %s,\n' % entry.variable_name)
     f.write('};\n\n')
@@ -187,7 +187,7 @@ class ResourceLibrary(object):
 
   def _DeclareTables(self, f):
     for table in self._tables:
-      f.write('extern const %s* %s_table[];\n\n' % (table.c_type, table.name)) 
+      f.write('extern const %s* const %s_table[];\n\n' % (table.c_type, table.name)) 
 
   def _DeclareEntries(self, f):
     for table in self._tables:
