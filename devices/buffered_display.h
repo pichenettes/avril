@@ -93,6 +93,8 @@ class BufferedDisplay {
 
   static inline void set_status(uint8_t status) {
     status_ = status + 1;
+    Lcd::ResetStatusCounter();
+    previous_status_counter_ = 0;
   }
   
   static inline void ForceStatus(uint8_t status) {
@@ -120,9 +122,13 @@ class BufferedDisplay {
     
     if (previous_blink_counter_ > Lcd::blink_counter()) {
       ++blink_;
+    }
+    previous_blink_counter_ = Lcd::status_counter();
+
+    if (previous_status_counter_ > Lcd::status_counter()) {
       status_ = 0;
     }
-    previous_blink_counter_ = Lcd::blink_counter();
+    previous_status_counter_ = Lcd::status_counter();
 
     uint8_t character = 0;
     // Determine which character to show at the current position.
@@ -184,6 +190,7 @@ class BufferedDisplay {
   static uint8_t scan_column_;
   static uint8_t scan_position_last_write_;
   static uint8_t blink_;
+  static uint8_t previous_status_counter_;
   static uint8_t previous_blink_counter_;
   static uint8_t cursor_position_;
   static uint8_t cursor_character_;
@@ -223,6 +230,10 @@ uint8_t BufferedDisplay<Lcd>::blink_;
 /* static */
 template<typename Lcd>
 uint8_t BufferedDisplay<Lcd>::previous_blink_counter_;
+
+/* static */
+template<typename Lcd>
+uint8_t BufferedDisplay<Lcd>::previous_status_counter_;
 
 /* static */
 template<typename Lcd>

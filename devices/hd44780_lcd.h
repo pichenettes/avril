@@ -117,6 +117,7 @@ class Hd44780Lcd {
 
   static inline void Tick() {
     ++blink_counter_;
+    ++status_counter_;
     if (transmitting_) {
       EndWrite();
       transmitting_ = 0;
@@ -188,6 +189,9 @@ class Hd44780Lcd {
   static inline uint8_t readable() { return OutputBuffer::readable(); }
   static inline uint8_t busy() { return transmitting_; }
   static inline uint8_t blink_counter() { return blink_counter_; }
+  static inline uint8_t status_counter() { return status_counter_; }
+  
+  static inline void ResetStatusCounter() { status_counter_ = 0; }
 
  private:
   static inline void StartWrite(uint8_t nibble) {
@@ -222,6 +226,7 @@ class Hd44780Lcd {
 
   static volatile uint8_t transmitting_;
   static volatile uint8_t blink_counter_;
+  static volatile uint8_t status_counter_;
 
   DISALLOW_COPY_AND_ASSIGN(Hd44780Lcd);
 };
@@ -237,6 +242,12 @@ template<typename RsPin, typename EnablePin, typename ParallelPort,
          uint8_t width, uint8_t height>
 volatile uint8_t Hd44780Lcd<RsPin, EnablePin, ParallelPort, width,
                             height>::blink_counter_;
+
+/* static */
+template<typename RsPin, typename EnablePin, typename ParallelPort,
+         uint8_t width, uint8_t height>
+volatile uint8_t Hd44780Lcd<RsPin, EnablePin, ParallelPort, width,
+                            height>::status_counter_;
 
 }  // namespace avrlib
 
