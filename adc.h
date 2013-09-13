@@ -81,6 +81,9 @@ class Adc {
   static inline void Wait() {
     while (AdcConvert::value());
   }
+  static bool ready() {
+    return !AdcConvert::value();
+  }
   static inline int16_t ReadOut() {
     uint8_t low = ADCL;
     uint8_t high = ADCH;
