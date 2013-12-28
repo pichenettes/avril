@@ -109,6 +109,10 @@ class BufferedDisplay {
     Lcd::WriteData(status_ - 1);
     remote_[scan_position_] = status_ - 1;
   }
+  
+  static void BlinkCursor() {
+    ++blink_;
+  }
 
   static void Tick() {
     // The following code is likely to write 4 bytes at most. If there are less
@@ -120,11 +124,6 @@ class BufferedDisplay {
     // It is now safe to assume that all writes of 4 bytes to the display buffer
     // will not block.
     
-    if (previous_blink_counter_ > Lcd::blink_counter()) {
-      ++blink_;
-    }
-    previous_blink_counter_ = Lcd::status_counter();
-
     if (previous_status_counter_ > Lcd::status_counter()) {
       status_ = 0;
     }
@@ -134,7 +133,7 @@ class BufferedDisplay {
     // Determine which character to show at the current position.
     // If the scan position is the cursor and it is shown (blinking), draw the
     // cursor.
-    if (scan_position_ == cursor_position_ && (blink_ & 2)) {
+    if (scan_position_ == cursor_position_ && (blink_ & 128)) {
       character = cursor_character_;
     } else {
       // Otherwise, check if there's a status indicator to display. It is
@@ -226,10 +225,6 @@ uint8_t BufferedDisplay<Lcd>::scan_position_last_write_;
 /* static */
 template<typename Lcd>
 uint8_t BufferedDisplay<Lcd>::blink_;
-
-/* static */
-template<typename Lcd>
-uint8_t BufferedDisplay<Lcd>::previous_blink_counter_;
 
 /* static */
 template<typename Lcd>
