@@ -26,6 +26,8 @@
 #ifndef AVRLIB_DEVICES_BUFFERED_DISPLAY_H_
 #define AVRLIB_DEVICES_BUFFERED_DISPLAY_H_
 
+#include <string.h>
+
 #include "avrlib/base.h"
 #include "avrlib/log2.h"
 #include "avrlib/op.h"
