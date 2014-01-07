@@ -79,6 +79,40 @@ typedef Port<PINARegister, PORTARegister, DDRARegister> PortA;
 
 #endif
 
+#if defined (ATMEGA640) || defined (ATMEGA1280) || defined(ATMEGA2560)
+IORegister(DDRE);
+IORegister(DDRF);
+IORegister(DDRG);
+IORegister(DDRH);
+IORegister(DDRJ);
+IORegister(DDRK);
+IORegister(DDRL);
+
+IORegister(PORTE);
+IORegister(PORTF);
+IORegister(PORTG);
+IORegister(PORTH);
+IORegister(PORTJ);
+IORegister(PORTK);
+IORegister(PORTL);
+
+IORegister(PINE);
+IORegister(PINF);
+IORegister(PING);
+IORegister(PINH);
+IORegister(PINJ);
+IORegister(PINK);
+IORegister(PINL);
+
+typedef Port<PINERegister, PORTERegister, DDRERegister> PortE;
+typedef Port<PINFRegister, PORTFRegister, DDRFRegister> PortF;
+typedef Port<PINGRegister, PORTGRegister, DDRGRegister> PortG;
+typedef Port<PINHRegister, PORTHRegister, DDRHRegister> PortH;
+typedef Port<PINJRegister, PORTJRegister, DDRJRegister> PortJ;
+typedef Port<PINKRegister, PORTKRegister, DDRKRegister> PortK;
+typedef Port<PINLRegister, PORTLRegister, DDRLRegister> PortL;
+
+#endif
 
 
 // The actual implementation of a pin, not very convenient to use because it
@@ -326,10 +360,30 @@ SetupGpio(21, PortC, NoPwmChannel, 5);
 SetupGpio(22, PortC, NoPwmChannel, 6);
 SetupGpio(23, PortC, NoPwmChannel, 7);
 
+SetupGpio(24, PortE, NoPwmChannel, 0);
+SetupGpio(25, PortE, NoPwmChannel, 1);
+SetupGpio(26, PortE, NoPwmChannel, 2);
+SetupGpio(27, PortE, NoPwmChannel, 3);
+SetupGpio(28, PortE, NoPwmChannel, 4);
+SetupGpio(29, PortE, NoPwmChannel, 5);
+SetupGpio(30, PortE, NoPwmChannel, 6);
+SetupGpio(31, PortE, NoPwmChannel, 7);
+
 typedef Gpio<PortB, 0> SpiSS;
 typedef Gpio<PortB, 1> SpiSCK;
 typedef Gpio<PortB, 2> SpiMOSI;
 typedef Gpio<PortB, 3> SpiMISO;
+
+typedef Gpio<PortE, 2> UartSpi0XCK;
+typedef Gpio<PortE, 1> UartSpi0TX;
+typedef Gpio<PortE, 0> UartSpi0RX;
+
+typedef Gpio<PortD, 5> UartSpi1XCK;
+typedef Gpio<PortD, 3> UartSpi1TX;
+typedef Gpio<PortD, 2> UartSpi1RX;
+
+#define HAS_USART0
+#define HAS_USART1
 
 #else
 
