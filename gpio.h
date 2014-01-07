@@ -297,6 +297,40 @@ typedef Gpio<PortD, 2> UartSpi1RX;
 #define HAS_TIMER3
 #endif
 
+#elif defined (ATMEGA640) || defined(ATMEGA1280) || defined(ATMEGA2560)
+
+SetupGpio(0,  PortB, NoPwmChannel, 0);
+SetupGpio(1,  PortB, NoPwmChannel, 1);
+SetupGpio(2,  PortB, NoPwmChannel, 2);
+SetupGpio(3,  PortB, NoPwmChannel, 3);
+SetupGpio(4,  PortB, PwmChannel2A, 4);
+SetupGpio(5,  PortB, PwmChannel1A, 5);
+SetupGpio(6,  PortB, PwmChannel1B, 6);
+SetupGpio(7,  PortB, PwmChannel0A, 7);
+
+SetupGpio(8,  PortD, NoPwmChannel, 0);
+SetupGpio(9,  PortD, NoPwmChannel, 1);
+SetupGpio(10, PortD, NoPwmChannel, 2);
+SetupGpio(11, PortD, NoPwmChannel, 3);
+SetupGpio(12, PortD, NoPwmChannel, 4);
+SetupGpio(13, PortD, NoPwmChannel, 5);
+SetupGpio(14, PortD, NoPwmChannel, 6);
+SetupGpio(15, PortD, NoPwmChannel, 7);
+
+SetupGpio(16, PortC, NoPwmChannel, 0);
+SetupGpio(17, PortC, NoPwmChannel, 1);
+SetupGpio(18, PortC, NoPwmChannel, 2);
+SetupGpio(19, PortC, NoPwmChannel, 3);
+SetupGpio(20, PortC, NoPwmChannel, 4);
+SetupGpio(21, PortC, NoPwmChannel, 5);
+SetupGpio(22, PortC, NoPwmChannel, 6);
+SetupGpio(23, PortC, NoPwmChannel, 7);
+
+typedef Gpio<PortB, 0> SpiSS;
+typedef Gpio<PortB, 1> SpiSCK;
+typedef Gpio<PortB, 2> SpiMOSI;
+typedef Gpio<PortB, 3> SpiMISO;
+
 #else
 
 #error Unsupported MCU type
