@@ -327,7 +327,8 @@ typedef Gpio<PortD, 2> UartSpi1RX;
 #define HAS_USART0
 #define HAS_USART1
 
-#ifdef ATMEGA1284P
+#if defined(ATMEGA1284P) || defined(ATMEGA640) || defined(ATMEGA1280)  \
+	|| defined(ATMEGA2560)
 #define HAS_TIMER3
 #endif
 
