@@ -47,6 +47,14 @@ inline void Boot(bool init_timers) {
 #ifdef HAS_USART1
   UCSR1B = 0;
 #endif
+
+#ifdef HAS_USART2
+  UCSR2B = 0;
+#endif
+
+#ifdef HAS_USART3
+  UCSR3B = 0
+#endif
 }
 
 }  // avr

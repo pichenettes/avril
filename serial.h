@@ -300,6 +300,58 @@ typedef SerialPort<
 
 #endif  // #ifdef HAS_USART1
 
+
+#ifdef HAS_USART2
+
+IORegister(UBRR2H);
+IORegister(UBRR2L);
+IORegister16(UBRR2);
+IORegister(UCSR2A);
+IORegister(UCSR2B);
+IORegister(UCSR2C);
+IORegister(UDR2);
+
+typedef SerialPort<
+    BitInRegister<UCSR2BRegister, TXEN2>,
+    BitInRegister<UCSR2ARegister, UDRE2>,
+    BitInRegister<UCSR2BRegister, RXEN2>,
+    BitInRegister<UCSR2ARegister, RXC2>,
+    BitInRegister<UCSR2BRegister, RXCIE2>,
+    BitInRegister<UCSR2ARegister, U2X2>,
+    UBRR2HRegister,
+    UBRR2LRegister,
+    UDR2Register,
+    kSerialOutputBufferSize,
+    kSerialInputBufferSize> SerialPort2;
+
+#endif  // #ifdef HAS_USART2
+
+#ifdef HAS_USART3
+
+IORegister(UBRR3H);
+IORegister(UBRR3L);
+IORegister16(UBRR3);
+IORegister(UCSR3A);
+IORegister(UCSR3B);
+IORegister(UCSR3C);
+IORegister(UDR3);
+
+typedef SerialPort<
+    BitInRegister<UCSR3BRegister, TXEN3>,
+    BitInRegister<UCSR3ARegister, UDRE3>,
+    BitInRegister<UCSR3BRegister, RXEN3>,
+    BitInRegister<UCSR3ARegister, RXC3>,
+    BitInRegister<UCSR3BRegister, RXCIE3>,
+    BitInRegister<UCSR3ARegister, U2X3>,
+    UBRR3HRegister,
+    UBRR3LRegister,
+    UDR3Register,
+    kSerialOutputBufferSize,
+    kSerialInputBufferSize> SerialPort3;
+
+#endif  // #ifdef HAS_USART3
+
 }  // namespace avrlib
+
 
 #endif  // AVRLIB_SERIAL_H_

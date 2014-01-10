@@ -383,8 +383,18 @@ typedef Gpio<PortD, 5> UartSpi1XCK;
 typedef Gpio<PortD, 3> UartSpi1TX;
 typedef Gpio<PortD, 2> UartSpi1RX;
 
+typedef Gpio<PortH, 2> UartSpi2XCK;
+typedef Gpio<PortH, 1> UartSpi2TX;
+typedef Gpio<PortH, 0> UartSpi2RX;
+
+typedef Gpio<PortJ, 2> UartSpi3XCK;
+typedef Gpio<PortJ, 1> UartSpi3TX;
+typedef Gpio<PortJ, 0> UartSpi3RX;
+
 #define HAS_USART0
 #define HAS_USART1
+#define HAS_USART2
+#define HAS_USART3
 
 #else
 
