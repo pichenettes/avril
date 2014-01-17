@@ -13,22 +13,36 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-AVRLIB_TOOLS_PATH = /usr/local/CrossPack-AVR/bin/
+AVRLIB_TOOLS_PATH ?= /usr/local/CrossPack-AVR/bin/
 BUILD_ROOT     = build/
 BUILD_DIR      = $(BUILD_ROOT)$(TARGET)/
-PROGRAMMER     = avrispmkII
+PROGRAMMER     ?= avrispmkII
+PROGRAMMER_PORT ?= usb
+AVRDUDE_ERASE  ?= no
+AVRDUDE_LOCK   ?= yes
 
 ifeq ($(FAMILY),tiny)
 MCU            = attiny$(MCU_NAME)
 DMCU           = t$(MCU_NAME)
 MCU_DEFINE     = ATTINY$(MCU_NAME)
 else
+ifeq ($(MCU_NAME),atmega2560)
+MCU=atmega2560
+DMCU=atmega2560
+MCU_DEFINE=ATMEGA2560
+else
+ifeq ($(FAMILY),mega)
+MCU            = atmega$(MCU_NAME)
+DMCU           = atmega$(MCU_NAME)
+MCU_DEFINE     = ATMEGA$(MCU_NAME)
+else
 MCU            = atmega$(MCU_NAME)p
 DMCU           = m$(MCU_NAME)p
 MCU_DEFINE     = ATMEGA$(MCU_NAME)P
 endif
+endif
 
-F_CPU          = 20000000
+F_CPU          ?= 20000000
 
 VPATH          = $(PACKAGES)
 CC_FILES       = $(notdir $(wildcard $(patsubst %,%/*.cc,$(PACKAGES))))
@@ -120,8 +134,19 @@ $(BUILD_DIR)%.sym: $(BUILD_DIR)%.elf
 # ------------------------------------------------------------------------------
 
 AVRDUDE_COM_OPTS = -V -p $(DMCU)
-AVRDUDE_ISP_OPTS = -c $(PROGRAMMER) -P usb
+AVRDUDE_ISP_OPTS = -c $(PROGRAMMER) -P $(PROGRAMMER_PORT)
 
+ifeq ($(AVRDUDE_LOCK),no)
+AVRDUDE_LOCK_OPTS =
+else
+AVRDUDE_LOCK_OPTS ?= -U lock:w:0x$(LOCK):m
+endif
+
+ifeq ($(AVRDUDE_ERASE),no)
+AVRDUDE_ERASE_OPTS = 
+else
+AVRDUDE_ERASE_OPTS ?= -D
+endif
 # ------------------------------------------------------------------------------
 # Main targets
 # ------------------------------------------------------------------------------
@@ -139,13 +164,14 @@ $(DEP_FILE):  $(BUILD_DIR) $(DEPS)
 
 bin:	$(TARGET_BIN)
 
+
 upload:    $(TARGET_HEX)
-		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
-			-B 1 -U flash:w:$(TARGET_HEX):i -U lock:w:0x$(LOCK):m
+		$(AVRDUDE) $(AVRDUDE_ERASE_OPTS) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
+			-B 1 -U flash:w:$(TARGET_HEX):i $(AVRDUDE_LOCK_OPTS) 
 
 slow_upload:    $(TARGET_HEX)
-		$(AVRDUDE) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
-			-B 4 -U flash:w:$(TARGET_HEX):i -U lock:w:0x$(LOCK):m
+		$(AVRDUDE) $(AVRDUDE_ERASE_OPTS) $(AVRDUDE_COM_OPTS) $(AVRDUDE_ISP_OPTS) \
+			-B 4 -U flash:w:$(TARGET_HEX):i $(AVRDUDE_LOCK_OPTS)
 
 clean:
 		$(REMOVE) $(OBJS) $(TARGETS) $(DEP_FILE) $(DEPS)
