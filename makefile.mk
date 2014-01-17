@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-AVRLIB_TOOLS_PATH = /usr/local/CrossPack-AVR/bin/
+AVRLIB_TOOLS_PATH = /opt/local/bin/
 BUILD_ROOT     = build/
 BUILD_DIR      = $(BUILD_ROOT)$(TARGET)/
 PROGRAMMER     = avrispmkII
@@ -23,12 +23,18 @@ MCU            = attiny$(MCU_NAME)
 DMCU           = t$(MCU_NAME)
 MCU_DEFINE     = ATTINY$(MCU_NAME)
 else
+ifeq ($(MCU_NAME),atmega2560)
+MCU=atmega2560
+DMCU=atmega2560
+MCU_DEFINE=ATMEGA2560
+else
 MCU            = atmega$(MCU_NAME)p
 DMCU           = m$(MCU_NAME)p
 MCU_DEFINE     = ATMEGA$(MCU_NAME)P
 endif
+endif
 
-F_CPU          = 20000000
+F_CPU          ?= 20000000
 
 VPATH          = $(PACKAGES)
 CC_FILES       = $(notdir $(wildcard $(patsubst %,%/*.cc,$(PACKAGES))))
