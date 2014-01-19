@@ -53,7 +53,7 @@ inline void Boot(bool init_timers) {
 #endif
 
 #ifdef HAS_USART3
-  UCSR3B = 0
+  UCSR3B = 0;
 #endif
 }
 

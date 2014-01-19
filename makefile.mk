@@ -41,6 +41,7 @@ DMCU           = m$(MCU_NAME)p
 MCU_DEFINE     = ATMEGA$(MCU_NAME)P
 endif
 endif
+endif
 
 F_CPU          ?= 20000000
 
