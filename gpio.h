@@ -370,6 +370,60 @@ SetupGpio(29, PortE, NoPwmChannel, 5);
 SetupGpio(30, PortE, NoPwmChannel, 6);
 SetupGpio(31, PortE, NoPwmChannel, 7);
 
+SetupGpio(32, PortF, NoPwmChannel, 0);
+SetupGpio(33, PortF, NoPwmChannel, 1);
+SetupGpio(34, PortF, NoPwmChannel, 2);
+SetupGpio(35, PortF, NoPwmChannel, 3);
+SetupGpio(36, PortF, NoPwmChannel, 4);
+SetupGpio(37, PortF, NoPwmChannel, 5);
+SetupGpio(38, PortF, NoPwmChannel, 6);
+SetupGpio(39, PortF, NoPwmChannel, 7);
+
+SetupGpio(32, PortG, NoPwmChannel, 0);
+SetupGpio(33, PortG, NoPwmChannel, 1);
+SetupGpio(34, PortG, NoPwmChannel, 2);
+SetupGpio(35, PortG, NoPwmChannel, 3);
+SetupGpio(36, PortG, NoPwmChannel, 4);
+SetupGpio(37, PortG, NoPwmChannel, 5);
+SetupGpio(38, PortG, NoPwmChannel, 6);
+SetupGpio(39, PortG, NoPwmChannel, 7);
+
+SetupGpio(32, PortH, NoPwmChannel, 0);
+SetupGpio(33, PortH, NoPwmChannel, 1);
+SetupGpio(34, PortH, NoPwmChannel, 2);
+SetupGpio(35, PortH, NoPwmChannel, 3);
+SetupGpio(36, PortH, NoPwmChannel, 4);
+SetupGpio(37, PortH, NoPwmChannel, 5);
+SetupGpio(38, PortH, NoPwmChannel, 6);
+SetupGpio(39, PortH, NoPwmChannel, 7);
+
+SetupGpio(40, PortJ, NoPwmChannel, 0);
+SetupGpio(41, PortJ, NoPwmChannel, 1);
+SetupGpio(42, PortJ, NoPwmChannel, 2);
+SetupGpio(43, PortJ, NoPwmChannel, 3);
+SetupGpio(44, PortJ, NoPwmChannel, 4);
+SetupGpio(45, PortJ, NoPwmChannel, 5);
+SetupGpio(46, PortJ, NoPwmChannel, 6);
+SetupGpio(47, PortJ, NoPwmChannel, 7);
+
+SetupGpio(48, PortK, NoPwmChannel, 0);
+SetupGpio(49, PortK, NoPwmChannel, 1);
+SetupGpio(50, PortK, NoPwmChannel, 2);
+SetupGpio(51, PortK, NoPwmChannel, 3);
+SetupGpio(52, PortK, NoPwmChannel, 4);
+SetupGpio(53, PortK, NoPwmChannel, 5);
+SetupGpio(54, PortK, NoPwmChannel, 6);
+SetupGpio(55, PortK, NoPwmChannel, 7);
+
+SetupGpio(56, PortL, NoPwmChannel, 0);
+SetupGpio(57, PortL, NoPwmChannel, 1);
+SetupGpio(58, PortL, NoPwmChannel, 2);
+SetupGpio(59, PortL, NoPwmChannel, 3);
+SetupGpio(60, PortL, NoPwmChannel, 4);
+SetupGpio(61, PortL, NoPwmChannel, 5);
+SetupGpio(62, PortL, NoPwmChannel, 6);
+SetupGpio(63, PortL, NoPwmChannel, 7);
+
 typedef Gpio<PortB, 0> SpiSS;
 typedef Gpio<PortB, 1> SpiSCK;
 typedef Gpio<PortB, 2> SpiMOSI;
