@@ -30,8 +30,13 @@ enum ParallelPortMode {
   PARALLEL_BYTE,
   PARALLEL_NIBBLE_HIGH,
   PARALLEL_NIBBLE_LOW,
+  PARALLEL_TRIPLE_HIGHEST,
   PARALLEL_TRIPLE_HIGH,
-  PARALLEL_TRIPLE_LOW
+  PARALLEL_TRIPLE_LOW,
+  PARALLEL_DOUBLE_HIGH,
+  PARALLEL_DOUBLE_MIDHIGH,
+  PARALLEL_DOUBLE_MIDLOW,
+  PARALLEL_DOUBLE_LOW
 };
 
 template<ParallelPortMode mode>
@@ -59,9 +64,17 @@ struct ShiftMasks<PARALLEL_NIBBLE_LOW> {
 };
 
 template<>
+struct ShiftMasks<PARALLEL_TRIPLE_HIGHEST> {
+  enum Masks {
+    mask = 0xe0,
+    shift = 5,
+  };
+};
+
+template<>
 struct ShiftMasks<PARALLEL_TRIPLE_HIGH> {
   enum Masks {
-    mask = 0x78,
+    mask = 0x38,
     shift = 3,
   };
 };
@@ -70,6 +83,38 @@ template<>
 struct ShiftMasks<PARALLEL_TRIPLE_LOW> {
   enum Masks {
     mask = 0x07,
+    shift = 0,
+  };
+};
+
+template<>
+struct ShiftMasks<PARALLEL_DOUBLE_HIGH> {
+  enum Masks {
+    mask = 0xc0,
+    shift = 6,
+  };
+};
+
+template<>
+struct ShiftMasks<PARALLEL_DOUBLE_MIDHIGH> {
+  enum Masks {
+    mask = 0x30,
+    shift = 4,
+  };
+};
+
+template<>
+struct ShiftMasks<PARALLEL_DOUBLE_MIDLOW> {
+  enum Masks {
+    mask = 0x0c,
+    shift = 2,
+  };
+};
+
+template<>
+struct ShiftMasks<PARALLEL_DOUBLE_LOW> {
+  enum Masks {
+    mask = 0x03,
     shift = 0,
   };
 };
@@ -94,7 +139,8 @@ struct ParallelPort {
   }
 
   static inline void EnablePullUpResistors() {
-    Write(Masks::mask);
+    uint8_t preserve = *Port::Output::ptr();
+    *Port::Output::ptr() = preserve | Masks::mask;
   }
 
   static inline uint8_t Read() {
