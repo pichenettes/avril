@@ -70,7 +70,7 @@ typedef Port<PINBRegister, PORTBRegister, DDRBRegister> PortB;
 typedef Port<PINCRegister, PORTCRegister, DDRCRegister> PortC;
 typedef Port<PINDRegister, PORTDRegister, DDRDRegister> PortD;
 
-#if defined(ATMEGA164P) || defined(ATMEGA324P) || defined(ATMEGA644P) || defined(ATMEGA1284P) || defined(ATmega2560)
+#if defined(ATMEGA164P) || defined(ATMEGA324P) || defined(ATMEGA644P) || defined(ATMEGA1284P) || defined(ATMEGA2560)
 
 IORegister(DDRA);
 IORegister(PORTA);
