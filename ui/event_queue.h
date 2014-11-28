@@ -31,8 +31,7 @@ enum ControlType {
   CONTROL_POT = 0,
   CONTROL_ENCODER = 1,
   CONTROL_ENCODER_CLICK = 2,
-  CONTROL_SWITCH = 3,
-  CONTROL_REFRESH = 4
+  CONTROL_SWITCH = 3
 };
 
 struct Event {
