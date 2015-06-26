@@ -148,7 +148,7 @@ class ExternalEeprom {
     return Read();
   }
 
-  static inline uint8_t Read(uint16_t address, uint8_t size, uint8_t* data) {
+  static inline uint16_t Read(uint16_t address, uint16_t size, uint8_t* data) {
     if (!SetAddress(address)) {
       return 0;
     } else {
