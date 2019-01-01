@@ -1,7 +1,7 @@
 // Copyright 2012 Peter Kvitek
 //
 // Author: Peter Kvitek (pete@kvitek.com)
-// Based on BiColorLedArray code by Olivier Gillet (ol.gillet@gmail.com)
+// Based on BiColorLedArray code by Olivier Gillet (pichenettes@mutable-instruments.net)
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

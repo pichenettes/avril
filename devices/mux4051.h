@@ -18,7 +18,7 @@
 // CD4051 mux/demux abstraction. 4051 must be connected to low or high
 // nibble of a port.
 //
-// Based on parallel_io.cc code by Olivier Gillet (ol.gillet@gmail.com)
+// Based on parallel_io.cc code by Olivier Gillet (pichenettes@mutable-instruments.net)
 
 #ifndef AVRLIB_DEVICES_MUX4051_H_
 #define AVRLIB_DEVICES_MUX4051_H_
