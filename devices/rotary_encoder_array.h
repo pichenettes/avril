@@ -2,7 +2,7 @@
 //
 // Author: Peter Kvitek (pete@kvitek.com)
 // Based on RotaryEncoder and DebouncedSwitches code
-// by Olivier Gillet (pichenettes@mutable-instruments.net)
+// by Emilie Gillet (emilie.o.gillet@gmail.com)
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

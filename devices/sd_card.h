@@ -1,6 +1,6 @@
-// Copyright 2011 Olivier Gillet.
+// Copyright 2011 Emilie Gillet.
 //
-// Author: Olivier Gillet (pichenettes@mutable-instruments.net)
+// Author: Emilie Gillet (emilie.o.gillet@gmail.com)
 // 
 // Inspired by:
 // - The Arduino Sd2Card Library (C) 2009 by William Greiman,
