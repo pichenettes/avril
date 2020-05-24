@@ -158,7 +158,7 @@ class ExternalEeprom {
   
   static inline uint8_t Write(uint16_t address, uint8_t byte) {
     uint8_t data = byte;
-    return Write(&data, 1);
+    return Write(address, &data, 1);
   }
  
  private:
